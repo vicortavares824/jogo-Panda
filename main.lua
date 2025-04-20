@@ -92,6 +92,9 @@ local player = {
   vida = 100,
   largura = 45,
   altura = 70,
+  danoTimer = 0, -- Tempo em que o jogador ficará vermelho
+  coracao = LG.newImage('Sprit shet/heart.png'),
+  coracaoVazio = LG.newImage('Sprit shet/heart-empty.png')
 }
 
 local inimigos = {}
@@ -200,25 +203,46 @@ local function atualizarInimigos(dt)
         inimigo.lado = "left"
       end
     end
-     
-      for j, inimigo in ipairs(inimigos) do
-        if player.x < inimigo.x and player.x + player.largura > inimigo.x  and
-          player.y < inimigo.y  and player.y + player.altura + 25 > inimigo.y then
-        -- Reduz a vida do jogador
-          player.vida = player.vida - 10
-          if player.vida <= 0 then
-          -- Lógica para o que acontece quando o jogador morre (ex: reiniciar o jogo, etc.)
-          print("Game Over!")
-          end
+    
+    if player.collider:getX() - player.largura / 2 < inimigo.x + 60 / 2 and
+   player.collider:getX() + player.largura / 2 > inimigo.x - 60 / 2 and
+   player.collider:getY() - player.altura / 2 < inimigo.y + 60 / 2 and
+   player.collider:getY() + player.altura / 2 > inimigo.y - 60 / 2 then
+    
+        if player.danoTimer <= 0 then
+            player.vida = player.vida - 10
+            player.danoTimer = 0.1 -- Jogador ficará vermelho por 0.5 segundos
+            print("Colisão detectada! Vida do jogador:", player.vida)
+        end
 
-        -- Remove o inimigo
-        inimigo.collider:destroy()
-        table.remove(inimigos, _)
+        if player.vida <= 0 then
+            print("Game Over")
+        end
+  end
+
+    inimigo.anim:update(dt)
+  end
+end
+local function desenharVida()
+  local coracaoLargura = player.coracao:getWidth() * 1.5
+  for i=1 ,3 do
+    local coracaoX = 10 + (i - 1) * (coracaoLargura + 5) -- Espaçamento entre os corações
+    love.graphics.draw(player.coracao, 10 + coracaoX, 10,0,1.5,1.5)
+    if player.vida <= 75 then
+      if i == 3 then
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
       end
     end
-
-    -- Atualiza a animação
-    inimigo.anim:update(dt)
+    if player.vida <= 50 then
+      if i == 2 then
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
+      end
+    end
+    if player.vida <= 25 then
+      if i == 1 then
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
+      end
+    end
   end
 end
 
@@ -236,14 +260,22 @@ local function desenharInimigos()
   end
   LG.setColor(1, 1, 1)
 end
+local function desenharPlayer()
+  if player.danoTimer > 0 then
+  
+    LG.setColor(1, 0, 0) -- Vermelho
+  else
+   
+    LG.setColor(1, 1, 1) -- Branco (cor normal)
+  end
+  
+  player.anim:draw(player.lado, player.x - 57, player.y - 80, nil, 1.8)
+  LG.setColor(1, 1, 1) -- Reseta a cor para o padrão
+end
 local direcaoAtual = 1 -- 1 para direita, -1 para esquerda
 local cooldownTiro = 0 -- Tempo restante para o próximo tiro
 local tempoCooldownTiro = 0.5
 
-local tempoCriarInimigo = 10
-local tempoAtual = 0
-local maxInimigos = 10 -- Número máximo de inimigos permitidos
--- Função para atualizar as dimensões da tela e posição dos botões
 local function atualizarTamanhoTela()
   jogo.larguraTela = LG.getWidth()
   jogo.alturaTela = LG.getHeight()
@@ -322,6 +354,9 @@ function love.update(dt)
   -- Atualiza o cooldown do pulo
   if player.jumpCooldown > 0 then
     player.jumpCooldown = player.jumpCooldown - dt
+  end
+  if player.danoTimer > 0 then
+    player.danoTimer = player.danoTimer - dt
   end
 
   if LK.isDown("escape") then
@@ -437,16 +472,7 @@ function love.update(dt)
     player.jumpCooldown = 0 -- Permite pular imediatamente ao tocar o chão
   end
 
-  tempoAtual = tempoAtual - dt
-  if tempoAtual <= 0 then
-    if #inimigos < maxInimigos then -- Verifica se o número de inimigos é menor que o limite
-      math.randomseed(os.time())
-      local posX = math.random(100, jogo.mapaLargura)
-      local posY = 238
-      criarInimigo(posX, posY, "normal")
-    end
-    tempoAtual = tempoCriarInimigo
-  end
+ 
 
   atualizarInimigos(dt)
   atualizarTiros(dt)
@@ -456,6 +482,7 @@ end
 function love.draw()
   local escala = math.max(jogo.escalaX, jogo.escalaY)
   if not jogo.exibirMensagem1 then
+    
     jogo.animacaoFundo:draw(jogo.imagemFundo, 0, 0, 0, escala, escala)
   end
 
@@ -481,9 +508,12 @@ function love.draw()
     )
     jogo.exibirBotoes = not jogo.exibirMensagem2
   end
+
   if jogo.exibirMensagem1 then
+  
     sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
+    
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
     LG.scale(jogo.escala, jogo.escala)
@@ -494,12 +524,15 @@ function love.draw()
     
     LG.pop() -- Restaura o estado da matriz de transformação
     LG.setDefaultFilter("nearest", "nearest")
-    player.anim:draw(player.lado, player.x - 57, player.y - 80, nil, 1.8)
+    desenharPlayer()
+
     --world:draw()
     desenharInimigos()
     desenharTiros()
     cam:detach()
+    desenharVida()
   end
+  
 
 
 
