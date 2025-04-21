@@ -44,7 +44,7 @@ polyline = {
   { x = 4800, y = 96 }
 }
 local jogo = {
-  sons = { value = 30, max = 100 },
+  sons = { value = 10, max = 100 },
   brilho = { value = 100, max = 100 },
   telaCheia = false,
   larguraBotaoBase = 300,
@@ -73,7 +73,8 @@ local jogo = {
   mapLargura = 1,
   mapAltura = 1,
   escala = 1,
-  escalaBloco = 1.875
+  escalaBloco = 1.875,
+  estado = "jogando",
 }
 local player = {
   x = 345,
@@ -137,7 +138,29 @@ local function criarTiro(x, y, direcao)
   }
   table.insert(tiros, tiro)
 end
+local function reiniciarJogo()
+  -- Redefine as variáveis do jogador
+  player.x = 345
+  player.y = 134
+  player.vida = 100
+  player.danoTimer = 0
+  player.collider:setPosition(400, 250)
 
+  -- Remove todos os inimigos e recria os iniciais
+  inimigos = {}
+  local inimigosIniciais = 8
+  for i = 1, inimigosIniciais do
+    local posX = math.random(100, jogo.mapaLargura)
+    local posY = 237
+    criarInimigo(posX, posY, "normal")
+  end
+
+  -- Remove todos os tiros
+  tiros = {}
+  jogo.estado = "jogando"
+  -- Reseta outras variáveis do jogo, se necessário
+  jogo.exibirMensagem1 = true
+end
 local function atualizarTiros(dt)
   for i = #tiros, 1, -1 do
     local tiro = tiros[i]
@@ -211,13 +234,10 @@ local function atualizarInimigos(dt)
     
         if player.danoTimer <= 0 then
             player.vida = player.vida - 10
-            player.danoTimer = 0.1 -- Jogador ficará vermelho por 0.5 segundos
-            print("Colisão detectada! Vida do jogador:", player.vida)
+            player.danoTimer = 0.1
         end
 
-        if player.vida <= 0 then
-            print("Game Over")
-        end
+       
   end
 
     inimigo.anim:update(dt)
@@ -350,7 +370,9 @@ end
 -- Função de atualização do jogo
 function love.update(dt)
   local isMove = false
-
+  if jogo.estado == "pausado" then
+    return 
+  end
   -- Atualiza o cooldown do pulo
   if player.jumpCooldown > 0 then
     player.jumpCooldown = player.jumpCooldown - dt
@@ -388,7 +410,7 @@ function love.update(dt)
     currentVelY = vy
 
     -- Movimento para a direita
-    if LK.isDown("right") then
+    if LK.isDown("right","d") then
       if player.x < (9500 - player.spRiht:getWidth()) then
         player.x = player.x + player.speed * dt
         velx = player.speed
@@ -398,7 +420,7 @@ function love.update(dt)
         sons(jogo.sons, false, "andar")
       end
       isMove = true
-    elseif LK.isDown("left") then
+    elseif LK.isDown("left","a") then
       if player.x > 0 then
         player.x = player.x - player.speed * dt
         velx = -player.speed
@@ -532,10 +554,24 @@ function love.draw()
     cam:detach()
     desenharVida()
   end
+  if player.vida <= 0 then
+    -- Define as cores do botão
+    suit.theme.color = {
+      normal = {bg = {0.2, 0.2, 0.2}, fg = {1, 1, 1}},
+      hovered = {bg = {0.5, 0.5, 0.5}, fg = {0, 0, 1}}, 
+      active = {bg = {0.1, 0.1, 0.1}, fg = {0, 1, 0}} }
+      if player.vida <= 0 then
+        jogo.estado = "pausado" -- Altera o estado do jogo para "pausado"
+      end
+    
+    if suit.Button("Reiniciar", jogo.posicaoBotaoX, jogo.posicaoBotaoY + 50, jogo.larguraBotao, jogo.alturaBotao).hit then
+      reiniciarJogo() 
+    end
   
-
-
-
+    -- Exibe o texto "Game Over"
+    LG.setColor(0.5, 0.5, 0.5) -- Cor cinza médio para o texto
+    suit.Label("Game Over", jogo.posicaoBotaoX, jogo.posicaoBotaoY, jogo.larguraBotao, jogo.alturaBotao)
+  end
   -- Mova o suit.draw() para o final para que ele seja desenhado por último
   suit.draw()
 end

@@ -1,7 +1,11 @@
 local buttons = {}
 function buttons.draw(show_buttons, x, y, largura_botao, largura_botao_base, altura_botao_base, tela_cheia, tamanhoTela, show_message1, show_message2)
   if show_buttons then -- Desenha os botões apenas se show_buttons for verdadeiro
-      
+    suit.theme.color = {
+      normal = {bg = {0.2, 0.2, 0.2}, fg = {1, 1, 1}}, -- Fundo cinza escuro, texto branco
+      hovered = {bg = {0.5, 0.5, 0.5}, fg = {0, 0, 1}}, -- Fundo cinza médio, texto azul
+      active = {bg = {0.1, 0.1, 0.1}, fg = {0, 1, 0}} -- Fundo quase preto, texto verde
+  }
         opacao1 = suit.Button("Play Game", x,y, largura_botao,altura_tela)
         opacao2 = suit.Button("Opções", x,y+50, largura_botao,altura_tela)
         opacao3 = suit.Button("Sair", x,y+100, largura_botao,altura_tela)
