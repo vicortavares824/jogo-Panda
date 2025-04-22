@@ -9,7 +9,7 @@ function opcao(x, y, tamanhoTela, show_message1, show_message2, slider, brilho)
     suit.Slider(slider, x + 80, y, 200, 30)
     suit.Label(tostring(slider.value), { align = "right" }, x + 280, y, 90, 30)
    
-        for key, source in pairs(sounds) do
+    for key, source in pairs(sounds) do
         source:setVolume( math.min(slider.value / 100, 1.0))
       end
     suit.Label("Brilho:", x - 80, y + 40, 145, 30)

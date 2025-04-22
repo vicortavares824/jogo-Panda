@@ -59,10 +59,8 @@ local jogo = {
   posicaoBotaoY = 0,
   escalaX = 1,
   escalaY = 1,
-  imagemFundo = LG.newImage('sprits/fundo.png'),
+  imagemFundo = LG.newVideo('sprits/fundo.ogv'),
   animacaoFundo = nil,
-  larguraFrame = 170,
-  alturaFrame = 128,
   fonte = nil,
   exibirMensagem1 = false,
   exibirMensagem2 = false,
@@ -303,8 +301,8 @@ local function atualizarTamanhoTela()
   jogo.alturaTela = LG.getHeight()
   jogo.posicaoBotaoX = (jogo.larguraTela - jogo.larguraBotao) / 2
   jogo.posicaoBotaoY = (jogo.alturaTela - jogo.alturaBotao) / 2
-  jogo.escalaX = jogo.larguraTela / jogo.larguraFrame
-  jogo.escalaY = jogo.alturaTela / jogo.alturaFrame
+  jogo.escalaX = jogo.larguraTela / jogo.imagemFundo:getWidth() 
+  jogo.escalaY = jogo.alturaTela / jogo.imagemFundo:getHeight()
   jogo.mapLargura = jogo.larguraTela / jogo.mapaLargura
   jogo.mapAltura = jogo.alturaTela / jogo.mapaAltura
 end
@@ -312,6 +310,10 @@ end
 
 -- Função de carregamento do jogo
 function love.load()
+
+  jogo.imagemFundo:play()
+  jogo.imagemFundo:setFilter("linear", "linear")
+ 
   for key, source in pairs(sounds) do
     local volume = math.min(jogo.sons.value / 100, 1.0) -- Converte o valor do slider para o intervalo de 0 a 1
     source:setVolume(volume)
@@ -336,13 +338,11 @@ function love.load()
   player.collider = world:newBSGRectangleCollider(400, 250, 45, 70, 10)
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
-  LG.setDefaultFilter("nearest", "nearest")
+
 
   atualizarTamanhoTela()
 
-  local grid = anim8.newGrid(jogo.larguraFrame, jogo.alturaFrame, jogo.imagemFundo:getWidth(),
-    jogo.imagemFundo:getHeight())
-  jogo.animacaoFundo = anim8.newAnimation(grid('1-119', 1), jogo.tempoAnimacao)
+  
 
   carregarInimigos()
 
@@ -363,6 +363,10 @@ end
 -- Função de atualização do jogo
 function love.update(dt)
   local isMove = false
+  if jogo.imagemFundo:isPlaying() == false then
+    jogo.imagemFundo:seek(0) -- Volta para o início do vídeo
+    jogo.imagemFundo:play() -- Inicia a reprodução novamente
+  end
   if jogo.estado == "pausado" then
     return
   end
@@ -472,7 +476,6 @@ function love.update(dt)
   player.y = player.collider:getY()
 
   player.anim:update(dt)
-  jogo.animacaoFundo:update(dt)
   local targetY = jogo.alturaTela / 2
   cam:lookAt(player.x, targetY)
 
@@ -490,9 +493,10 @@ end
 
 -- Função de desenho do jogo
 function love.draw()
-  local escala = math.max(jogo.escalaX, jogo.escalaY)
+  local escala = math.max(jogo.escalaX, jogo.escalaY) 
+ 
   if not jogo.exibirMensagem1 then
-    jogo.animacaoFundo:draw(jogo.imagemFundo, 0, 0, 0, escala, escala)
+    love.graphics.draw(jogo.imagemFundo, 0, 0, 0, escala, escala)
   end
 
   if LK.isDown("up", "space", "w") then
