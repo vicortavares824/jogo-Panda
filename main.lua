@@ -45,7 +45,7 @@ polyline = {
 }
 local jogo = {
   sons = { value = 10, max = 100 },
-  brilho = { value = 100, max = 100 },
+  brilho = { value = 80, max = 100 },
   telaCheia = false,
   larguraBotaoBase = 300,
   alturaBotaoBase = 30,
@@ -59,7 +59,7 @@ local jogo = {
   posicaoBotaoY = 0,
   escalaX = 1,
   escalaY = 1,
-  imagemFundo = nil,
+  imagemFundo = LG.newImage('sprits/fundo.png'),
   animacaoFundo = nil,
   larguraFrame = 170,
   alturaFrame = 128,
@@ -67,7 +67,6 @@ local jogo = {
   exibirMensagem1 = false,
   exibirMensagem2 = false,
   exibirBotoes = true,
-
   mapaLargura = 9000,
   mapaAltura = gameMap.height * gameMap.tileheight,
   mapLargura = 1,
@@ -106,7 +105,7 @@ local function criarInimigo(x, y, tipo)
   local inimigo = {
     x = x,
     y = y,
-    speed = 100,
+    speed = 200,
     tipo = tipo,
     vida = 100,
     lado = "left",
@@ -114,8 +113,8 @@ local function criarInimigo(x, y, tipo)
     spIS = LG.newImage('Sprit shet/inimigo Sushi.png'),
     grid = nil,
     anim = nil,
-    limiteEsquerdo = x - 50,
-    limiteDireito = x + 300,
+    limiteEsquerdo = x - 80,
+    limiteDireito = x + 400,
     danoTimer = 0 -- Tempo em que o inimigo ficará vermelho
   }
   inimigo.collider:setType("dynamic")
@@ -147,6 +146,19 @@ local function reiniciarJogo()
   player.collider:setPosition(400, 250)
 
   -- Remove todos os inimigos e recria os iniciais
+  for _, inimigo in ipairs(inimigos) do
+    if inimigo.collider then
+      inimigo.collider:destroy()
+    end
+  end
+  carregarInimigos()
+  -- Remove todos os tiros
+  tiros = {}
+  jogo.estado = "jogando"
+  -- Reseta outras variáveis do jogo, se necessário
+  jogo.exibirMensagem1 = true
+end
+function carregarInimigos()
   inimigos = {}
   local inimigosIniciais = 8
   for i = 1, inimigosIniciais do
@@ -154,13 +166,8 @@ local function reiniciarJogo()
     local posY = 237
     criarInimigo(posX, posY, "normal")
   end
-
-  -- Remove todos os tiros
-  tiros = {}
-  jogo.estado = "jogando"
-  -- Reseta outras variáveis do jogo, se necessário
-  jogo.exibirMensagem1 = true
 end
+
 local function atualizarTiros(dt)
   for i = #tiros, 1, -1 do
     local tiro = tiros[i]
@@ -171,13 +178,13 @@ local function atualizarTiros(dt)
       local inimigo = inimigos[j]
 
       -- Ajuste do ponto de colisão (offsetY)
-      
+
 
       -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos)
-      if tiro.x < inimigo.x and tiro.x + tiro.largura > inimigo.x  and
-      tiro.y < inimigo.y  and tiro.y + tiro.altura + 25 > inimigo.y then
+      if tiro.x < inimigo.x and tiro.x + tiro.largura > inimigo.x and
+          tiro.y < inimigo.y and tiro.y + tiro.altura + 25 > inimigo.y then
         -- Reduz a vida do inimigo
-     
+
         inimigo.vida = inimigo.vida - 10
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
@@ -226,41 +233,38 @@ local function atualizarInimigos(dt)
         inimigo.lado = "left"
       end
     end
-    
-    if player.collider:getX() - player.largura / 2 < inimigo.x + 60 / 2 and
-   player.collider:getX() + player.largura / 2 > inimigo.x - 60 / 2 and
-   player.collider:getY() - player.altura / 2 < inimigo.y + 60 / 2 and
-   player.collider:getY() + player.altura / 2 > inimigo.y - 60 / 2 then
-    
-        if player.danoTimer <= 0 then
-            player.vida = player.vida - 10
-            player.danoTimer = 0.1
-        end
 
-       
-  end
+    if player.collider:getX() - player.largura / 2 < inimigo.x + 60 / 2 and
+        player.collider:getX() + player.largura / 2 > inimigo.x - 60 / 2 and
+        player.collider:getY() - player.altura / 2 < inimigo.y + 60 / 2 and
+        player.collider:getY() + player.altura / 2 > inimigo.y - 60 / 2 then
+      if player.danoTimer <= 0 then
+        player.vida = player.vida - 10
+        player.danoTimer = 0.1
+      end
+    end
 
     inimigo.anim:update(dt)
   end
 end
 local function desenharVida()
   local coracaoLargura = player.coracao:getWidth() * 1.5
-  for i=1 ,3 do
+  for i = 1, 3 do
     local coracaoX = 10 + (i - 1) * (coracaoLargura + 5) -- Espaçamento entre os corações
-    love.graphics.draw(player.coracao, 10 + coracaoX, 10,0,1.5,1.5)
+    love.graphics.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
     if player.vida <= 75 then
       if i == 3 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 50 then
       if i == 2 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 25 then
       if i == 1 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10,0,1.5,1.5)
+        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
   end
@@ -270,9 +274,9 @@ end
 local function desenharInimigos()
   for _, inimigo in ipairs(inimigos) do
     if inimigo.danoTimer > 0 then
-      LG.setColor(1, 0, 0,0.8) -- Vermelho
+      LG.setColor(1, 0, 0, 0.8) -- Vermelho
     else
-      LG.setColor(1, 1, 1) -- Branco (cor normal)
+      LG.setColor(1, 1, 1)     -- Branco (cor normal)
     end
     local escalaX = inimigo.lado == "left" and -1.8 or
         1.8                                                                          -- Inverte a escala para o lado esquerdo
@@ -282,13 +286,11 @@ local function desenharInimigos()
 end
 local function desenharPlayer()
   if player.danoTimer > 0 then
-  
     LG.setColor(1, 0, 0) -- Vermelho
   else
-   
     LG.setColor(1, 1, 1) -- Branco (cor normal)
   end
-  
+
   player.anim:draw(player.lado, player.x - 57, player.y - 80, nil, 1.8)
   LG.setColor(1, 1, 1) -- Reseta a cor para o padrão
 end
@@ -307,10 +309,9 @@ local function atualizarTamanhoTela()
   jogo.mapAltura = jogo.alturaTela / jogo.mapaAltura
 end
 
-local isMove = false
+
 -- Função de carregamento do jogo
 function love.load()
-  
   for key, source in pairs(sounds) do
     local volume = math.min(jogo.sons.value / 100, 1.0) -- Converte o valor do slider para o intervalo de 0 a 1
     source:setVolume(volume)
@@ -336,7 +337,6 @@ function love.load()
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
   LG.setDefaultFilter("nearest", "nearest")
-  jogo.imagemFundo = LG.newImage("sprits/fundo.png")
 
   atualizarTamanhoTela()
 
@@ -344,14 +344,7 @@ function love.load()
     jogo.imagemFundo:getHeight())
   jogo.animacaoFundo = anim8.newAnimation(grid('1-119', 1), jogo.tempoAnimacao)
 
-  local inimigosIniciais = 8
-  for i = 1, inimigosIniciais do
-  
-    local posX = math.random(100, jogo.mapaLargura)
-    local posY = 237
-      criarInimigo(posX, posY, "normal")
-  end
-
+  carregarInimigos()
 
   local Walls = {}
   for i = 1, #polyline - 1 do
@@ -371,7 +364,7 @@ end
 function love.update(dt)
   local isMove = false
   if jogo.estado == "pausado" then
-    return 
+    return
   end
   -- Atualiza o cooldown do pulo
   if player.jumpCooldown > 0 then
@@ -410,7 +403,7 @@ function love.update(dt)
     currentVelY = vy
 
     -- Movimento para a direita
-    if LK.isDown("right","d") then
+    if LK.isDown("right", "d") then
       if player.x < (9500 - player.spRiht:getWidth()) then
         player.x = player.x + player.speed * dt
         velx = player.speed
@@ -420,7 +413,7 @@ function love.update(dt)
         sons(jogo.sons, false, "andar")
       end
       isMove = true
-    elseif LK.isDown("left","a") then
+    elseif LK.isDown("left", "a") then
       if player.x > 0 then
         player.x = player.x - player.speed * dt
         velx = -player.speed
@@ -489,12 +482,7 @@ function love.update(dt)
     cam.x = jogo.mapaLargura - jogo.larguraTela / 2
   end
 
-  -- Redefine o cooldown quando o jogador tocar o chão
-  if player.collider:enter('Ground') then
-    player.jumpCooldown = 0 -- Permite pular imediatamente ao tocar o chão
-  end
 
- 
 
   atualizarInimigos(dt)
   atualizarTiros(dt)
@@ -504,11 +492,10 @@ end
 function love.draw()
   local escala = math.max(jogo.escalaX, jogo.escalaY)
   if not jogo.exibirMensagem1 then
-    
     jogo.animacaoFundo:draw(jogo.imagemFundo, 0, 0, 0, escala, escala)
   end
 
-  if LK.isDown("up", "space") then
+  if LK.isDown("up", "space", "w") then
     if player.jumpCooldown <= 0 then
       sons(jogo.sons, false, "pular")
       player.collider:applyLinearImpulse(0, -200) -- Aplica o impulso para o pulo
@@ -532,10 +519,9 @@ function love.draw()
   end
 
   if jogo.exibirMensagem1 then
-  
     sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
-    
+
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
     LG.scale(jogo.escala, jogo.escala)
@@ -543,11 +529,10 @@ function love.draw()
     gameMap:drawLayer(gameMap.layers["Fundo"])
     gameMap:drawLayer(gameMap.layers["Nuvem"])
     gameMap:drawLayer(gameMap.layers["Chao"])
-    
+
     LG.pop() -- Restaura o estado da matriz de transformação
     LG.setDefaultFilter("nearest", "nearest")
     desenharPlayer()
-
     --world:draw()
     desenharInimigos()
     desenharTiros()
@@ -557,17 +542,18 @@ function love.draw()
   if player.vida <= 0 then
     -- Define as cores do botão
     suit.theme.color = {
-      normal = {bg = {0.2, 0.2, 0.2}, fg = {1, 1, 1}},
-      hovered = {bg = {0.5, 0.5, 0.5}, fg = {0, 0, 1}}, 
-      active = {bg = {0.1, 0.1, 0.1}, fg = {0, 1, 0}} }
-      if player.vida <= 0 then
-        jogo.estado = "pausado" -- Altera o estado do jogo para "pausado"
-      end
-    
-    if suit.Button("Reiniciar", jogo.posicaoBotaoX, jogo.posicaoBotaoY + 50, jogo.larguraBotao, jogo.alturaBotao).hit then
-      reiniciarJogo() 
+      normal = { bg = { 0.2, 0.2, 0.2 }, fg = { 1, 1, 1 } },
+      hovered = { bg = { 0.5, 0.5, 0.5 }, fg = { 0, 0, 1 } },
+      active = { bg = { 0.1, 0.1, 0.1 }, fg = { 0, 1, 0 } }
+    }
+    if player.vida <= 0 then
+      jogo.estado = "pausado"   -- Altera o estado do jogo para "pausado"
     end
-  
+
+    if suit.Button("Reiniciar", jogo.posicaoBotaoX, jogo.posicaoBotaoY + 50, jogo.larguraBotao, jogo.alturaBotao).hit then
+      reiniciarJogo()
+    end
+
     -- Exibe o texto "Game Over"
     LG.setColor(0.5, 0.5, 0.5) -- Cor cinza médio para o texto
     suit.Label("Game Over", jogo.posicaoBotaoX, jogo.posicaoBotaoY, jogo.larguraBotao, jogo.alturaBotao)
