@@ -72,6 +72,8 @@ local jogo = {
   escala = 1,
   escalaBloco = 1.875,
   estado = "jogando",
+  chuva = nil,
+  imagemChuva = LG.newImage("Sprit shet/gota.png"),
 }
 local player = {
   x = 345,
@@ -139,7 +141,7 @@ local function reiniciarJogo()
   -- Redefine as variáveis do jogador
   player.x = 345
   player.y = 134
-  player.vida = 100
+  player.vida = 200
   player.danoTimer = 0
   player.collider:setPosition(400, 250)
 
@@ -202,6 +204,14 @@ local function atualizarTiros(dt)
     end
   end
 end
+function CarregarChuva()
+  jogo.chuva = LG.newParticleSystem(jogo.imagemChuva, 1000) -- Máximo de 1000 partículas
+  jogo.chuva:setParticleLifetime(0.95) -- Tempo de vida das partículas (1 a 2 segundos)
+  jogo.chuva:setEmissionRate(100) -- Taxa de emissão (partículas por segundo)
+  jogo.chuva:setSizeVariation(0.5) -- Variação no tamanho das partículas
+  jogo.chuva:setLinearAcceleration(-10, 300, 10, 500) -- Velocidade vertical (simula a gravidade)
+  jogo.chuva:setEmissionArea("uniform", jogo.larguraTela, 0) -- Espalha as partículas horizontalmente
+end
 
 local function desenharTiros()
   for _, tiro in ipairs(tiros) do
@@ -239,7 +249,7 @@ local function atualizarInimigos(dt)
       if player.danoTimer <= 0 then
         player.vida = player.vida - 10
         player.danoTimer = 0.1
-        player.collider:applyLinearImpulse(-10, -10) -- Aplica
+        player.collider:applyLinearImpulse(0, -50) -- Aplica
     end
     end
 
@@ -251,22 +261,23 @@ local function desenharVida()
   for i = 1, 3 do
     local coracaoX = 10 + (i - 1) * (coracaoLargura + 5) -- Espaçamento entre os corações
     love.graphics.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
-    if player.vida <= 75 then
+    if player.vida <= 175 then
       if i == 3 then
         love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
-    if player.vida <= 50 then
+    if player.vida <= 120 then
       if i == 2 then
         love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
-    if player.vida <= 25 then
+    if player.vida <= 75 then
       if i == 1 then
         love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
   end
+  LG.draw(jogo.chuva, jogo.larguraTela / 2, 0, 0, 1.5, 1.5)
 end
 
 -- Função para desenhar os inimigos
@@ -311,7 +322,7 @@ end
 
 -- Função de carregamento do jogo
 function love.load()
-
+  CarregarChuva()
   jogo.imagemFundo:play()
   jogo.imagemFundo:setFilter("linear", "linear")
  
@@ -364,6 +375,7 @@ end
 
 -- Função de atualização do jogo
 function love.update(dt)
+  jogo.chuva:update(dt)
   local isMove = false
   if jogo.imagemFundo:isPlaying() == false then
     jogo.imagemFundo:seek(0) -- Volta para o início do vídeo
@@ -539,11 +551,13 @@ function love.draw()
     LG.pop() -- Restaura o estado da matriz de transformação
     LG.setDefaultFilter("nearest", "nearest")
     desenharPlayer()
+
     --world:draw()
     desenharInimigos()
     desenharTiros()
     cam:detach()
     desenharVida()
+   
   end
   if player.vida <= 0 then
     -- Define as cores do botão
