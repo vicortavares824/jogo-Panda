@@ -87,8 +87,8 @@ local player = {
   lado = LG.newImage('Sprit shet/panda andando.png'),
   collider = nil,
   jumpCooldown = 0, -- Tempo de recarga para o próximo pulo
-  vida = 100,
-  largura = 45,
+  vida = 200,
+  largura = 30,
   altura = 70,
   danoTimer = 0, -- Tempo em que o jogador ficará vermelho
   coracao = LG.newImage('Sprit shet/heart.png'),
@@ -103,7 +103,7 @@ local function criarInimigo(x, y, tipo)
   local inimigo = {
     x = x,
     y = y,
-    speed = 200,
+    speed = 100,
     tipo = tipo,
     vida = 100,
     lado = "left",
@@ -183,7 +183,7 @@ local function atualizarTiros(dt)
           tiro.y < inimigo.y and tiro.y + tiro.altura + 25 > inimigo.y then
         -- Reduz a vida do inimigo
 
-        inimigo.vida = inimigo.vida - 10
+        inimigo.vida = inimigo.vida - 1
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
           inimigo.collider:destroy()
@@ -232,14 +232,15 @@ local function atualizarInimigos(dt)
       end
     end
 
-    if player.collider:getX() - player.largura / 2 < inimigo.x + 60 / 2 and
-        player.collider:getX() + player.largura / 2 > inimigo.x - 60 / 2 and
+    if player.collider:getX() - player.largura   < inimigo.x + 60 / 2 and
+        player.collider:getX() + player.largura  > inimigo.x - 60 / 2 and
         player.collider:getY() - player.altura / 2 < inimigo.y + 60 / 2 and
         player.collider:getY() + player.altura / 2 > inimigo.y - 60 / 2 then
       if player.danoTimer <= 0 then
         player.vida = player.vida - 10
         player.danoTimer = 0.1
-      end
+        player.collider:applyLinearImpulse(-10, -10) -- Aplica
+    end
     end
 
     inimigo.anim:update(dt)
@@ -336,6 +337,7 @@ function love.load()
   jogo.fonte = LG.newFont('font.ttf', 32)
   LG.setFont(jogo.fonte)
   player.collider = world:newBSGRectangleCollider(400, 250, 45, 70, 10)
+  player.collider:setType('dynamic')
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
 
