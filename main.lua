@@ -133,7 +133,7 @@ local function criarTiro(x, y, direcao)
     speed = 500,       -- Velocidade do tiro
     direcao = direcao, -- Direção do tiro (1 para direita, -1 para esquerda)
     largura = 10,
-    altura = 5
+    altura = 3
   }
   table.insert(tiros, tiro)
 end
@@ -185,7 +185,7 @@ local function atualizarTiros(dt)
           tiro.y < inimigo.y and tiro.y + tiro.altura + 25 > inimigo.y then
         -- Reduz a vida do inimigo
 
-        inimigo.vida = inimigo.vida - 1
+        inimigo.vida = inimigo.vida - 10
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
           inimigo.collider:destroy()
@@ -248,7 +248,7 @@ local function atualizarInimigos(dt)
         player.collider:getY() + player.altura / 2 > inimigo.y - 60 / 2 then
       if player.danoTimer <= 0 then
         player.vida = player.vida - 10
-        player.danoTimer = 0.1
+        player.danoTimer = 0.5
         player.collider:applyLinearImpulse(0, -50) -- Aplica
     end
     end
@@ -545,7 +545,6 @@ function love.draw()
     LG.scale(jogo.escala, jogo.escala)
 
     gameMap:drawLayer(gameMap.layers["Fundo"])
-    gameMap:drawLayer(gameMap.layers["Nuvem"])
     gameMap:drawLayer(gameMap.layers["Chao"])
 
     LG.pop() -- Restaura o estado da matriz de transformação
