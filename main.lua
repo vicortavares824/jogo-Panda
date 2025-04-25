@@ -43,6 +43,8 @@ polyline = {
   { x = 4736, y = 96 },
   { x = 4800, y = 96 }
 }
+local virtual_width = 800
+local virtual_height = 600
 local jogo = {
   sons = { value = 10, max = 100 },
   brilho = { value = 80, max = 100 },
@@ -109,7 +111,7 @@ local function criarInimigo(x, y, tipo)
     tipo = tipo,
     vida = 100,
     lado = "left",
-    collider = world:newRectangleCollider(x, y, 60, 60),
+    collider = world:newRectangleCollider(x, y, 60, 70),
     spIS = LG.newImage('Sprit shet/inimigo Sushi.png'),
     grid = nil,
     anim = nil,
@@ -294,6 +296,28 @@ local function desenharInimigos()
   end
   LG.setColor(1, 1, 1)
 end
+local Walls = {} -- Declare Walls fora da função para armazenar os colliders
+
+local function carregarLinhas()
+  -- Limpa os colliders existentes em Walls
+  for _, wall in ipairs(Walls) do
+    wall:destroy() -- Destroi os colliders antigos
+  end
+  Walls = {} -- Reinicia a tabela Walls
+
+  -- Cria novos colliders com base na polyline
+  for i = 1, #polyline - 1 do
+    local p1 = polyline[i]
+    local p2 = polyline[i + 1]
+    local scaled_x1 = p1.x * jogo.escalaBloco
+    local scaled_y1 = p1.y * jogo.escalaBloco
+    local scaled_x2 = p2.x * jogo.escalaBloco
+    local scaled_y2 = p2.y * jogo.escalaBloco
+    local wall = world:newLineCollider(scaled_x1, scaled_y1 + 330, scaled_x2, scaled_y2 + 330)
+    wall:setType('static')
+    table.insert(Walls, wall)
+  end
+end
 local function desenharPlayer()
   if player.danoTimer > 0 then
     LG.setColor(1, 0, 0) -- Vermelho
@@ -317,6 +341,13 @@ local function atualizarTamanhoTela()
   jogo.escalaY = jogo.alturaTela / jogo.imagemFundo:getHeight()
   jogo.mapLargura = jogo.larguraTela / jogo.mapaLargura
   jogo.mapAltura = jogo.alturaTela / jogo.mapaAltura
+  if love.window.getFullscreen() then
+    jogo.escalaBloco = 2.4
+    carregarLinhas()
+  elseif not love.window.getFullscreen() then
+    jogo.escalaBloco = 1.875
+    carregarLinhas()
+  end
 end
 
 
@@ -358,19 +389,8 @@ function love.load()
   
 
   carregarInimigos()
-
-  local Walls = {}
-  for i = 1, #polyline - 1 do
-    local p1 = polyline[i]
-    local p2 = polyline[i + 1]
-    local scaled_x1 = p1.x * jogo.escalaBloco
-    local scaled_y1 = p1.y * jogo.escalaBloco
-    local scaled_x2 = p2.x * jogo.escalaBloco
-    local scaled_y2 = p2.y * jogo.escalaBloco
-    local wall = world:newLineCollider(scaled_x1, scaled_y1 + 330, scaled_x2, scaled_y2 + 330)
-    wall:setType('static')
-    table.insert(Walls, wall)
-  end
+  carregarLinhas() 
+  
 end
 
 -- Função de atualização do jogo
@@ -551,7 +571,7 @@ function love.draw()
     LG.setDefaultFilter("nearest", "nearest")
     desenharPlayer()
 
-    --world:draw()
+    world:draw()
     desenharInimigos()
     desenharTiros()
     cam:detach()
