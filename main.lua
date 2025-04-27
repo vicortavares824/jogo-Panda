@@ -76,6 +76,7 @@ local jogo = {
   estado = "jogando",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
+  soma = 330
 }
 local player = {
   x = 345,
@@ -164,6 +165,7 @@ function carregarInimigos()
   inimigos = {}
   local inimigosIniciais = 8
   for i = 1, inimigosIniciais do
+
     local posX = math.random(100, jogo.mapaLargura)
     local posY = 237
     criarInimigo(posX, posY, "normal")
@@ -188,6 +190,7 @@ local function atualizarTiros(dt)
         -- Reduz a vida do inimigo
 
         inimigo.vida = inimigo.vida - 10
+    
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
           inimigo.collider:destroy()
@@ -313,7 +316,7 @@ local function carregarLinhas()
     local scaled_y1 = p1.y * jogo.escalaBloco
     local scaled_x2 = p2.x * jogo.escalaBloco
     local scaled_y2 = p2.y * jogo.escalaBloco
-    local wall = world:newLineCollider(scaled_x1, scaled_y1 + 330, scaled_x2, scaled_y2 + 330)
+    local wall = world:newLineCollider(scaled_x1, scaled_y1 + jogo.soma, scaled_x2, scaled_y2 + jogo.soma)
     wall:setType('static')
     table.insert(Walls, wall)
   end
@@ -331,7 +334,19 @@ end
 local direcaoAtual = 1 -- 1 para direita, -1 para esquerda
 local cooldownTiro = 0 -- Tempo restante para o próximo tiro
 local tempoCooldownTiro = 0.5
+local function resetarEixoY()
+  -- Reseta o eixo Y do jogador
+  local posicaoInicialYJogador = 250 -- Defina a posição inicial no eixo Y
+  player.collider:setY(posicaoInicialYJogador)
+  player.y = posicaoInicialYJogador
 
+  -- Reseta o eixo Y dos inimigos
+  local posicaoInicialYInimigos = 237 -- Defina a posição inicial no eixo Y para os inimigos
+  for _, inimigo in ipairs(inimigos) do
+    inimigo.collider:setY(posicaoInicialYInimigos)
+    inimigo.y = posicaoInicialYInimigos
+  end
+end
 local function atualizarTamanhoTela()
   jogo.larguraTela = LG.getWidth()
   jogo.alturaTela = LG.getHeight()
@@ -341,12 +356,17 @@ local function atualizarTamanhoTela()
   jogo.escalaY = jogo.alturaTela / jogo.imagemFundo:getHeight()
   jogo.mapLargura = jogo.larguraTela / jogo.mapaLargura
   jogo.mapAltura = jogo.alturaTela / jogo.mapaAltura
-  if love.window.getFullscreen() then
+  if jogo.telaCheia then
     jogo.escalaBloco = 2.4
-    carregarLinhas()
-  elseif not love.window.getFullscreen() then
+    jogo.soma = 420
+  elseif not jogo.telaCheia then
     jogo.escalaBloco = 1.875
-    carregarLinhas()
+    jogo.soma = 330
+  end
+  carregarLinhas() -- Recarrega os colliders das linhas
+    if jogo.telaCheia ~= jogo.telaCheiaAnterior then
+    resetarEixoY()
+    jogo.telaCheiaAnterior = jogo.telaCheia -- Atualiza o estado anterior
   end
 end
 
@@ -382,12 +402,6 @@ function love.load()
   player.collider:setType('dynamic')
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
-
-
-  atualizarTamanhoTela()
-
-  
-
   carregarInimigos()
   carregarLinhas() 
   
@@ -571,7 +585,7 @@ function love.draw()
     LG.setDefaultFilter("nearest", "nearest")
     desenharPlayer()
 
-    world:draw()
+    --world:draw()
     desenharInimigos()
     desenharTiros()
     cam:detach()
