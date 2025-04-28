@@ -545,7 +545,6 @@ end
 -- Função de desenho do jogo
 function love.draw()
   local escala = math.max(jogo.escalaX, jogo.escalaY) 
- 
   if not jogo.exibirMensagem1 then
     love.graphics.draw(jogo.imagemFundo, 0, 0, 0, escala, escala)
   end
@@ -574,6 +573,7 @@ function love.draw()
   end
 
   if jogo.exibirMensagem1 then
+    
     sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
 
