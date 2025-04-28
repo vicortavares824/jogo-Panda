@@ -299,11 +299,19 @@ local function desenharInimigos()
     else
       LG.setColor(1, 1, 1)     -- Branco (cor normal)
     end
-    local escalaX = inimigo.lado == "left" and -1.8 or
-        1.8                                                                          -- Inverte a escala para o lado esquerdo
-    inimigo.anim:draw(inimigo.spIS, inimigo.x, inimigo.y, nil, escalaX, 1.8, 32, 32) -- Ajusta a posição de origem para o centro do inimigo
+
+
+    local escalaX = inimigo.lado == "left" and -1.8 or 1.8
+    inimigo.anim:draw(inimigo.spIS, inimigo.x, inimigo.y, nil, escalaX, 1.8, 32, 32)
+    local barraLargura = 50 -- Largura da barra de vida
+    local barraAltura = 5   -- Altura da barra de vida
+    local vidaPercentual = inimigo.vida / 100 
+    LG.setColor(0, 0, 0)
+    LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura, barraAltura)
+    LG.setColor(0, 1, 0)
+    LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura * vidaPercentual, barraAltura)
   end
-  LG.setColor(1, 1, 1)
+
 end
 local Walls = {} -- Declare Walls fora da função para armazenar os colliders
 
