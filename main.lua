@@ -165,7 +165,6 @@ function carregarInimigos()
   inimigos = {}
   local inimigosIniciais = 8
   for i = 1, inimigosIniciais do
-
     local posX = math.random(100, jogo.mapaLargura)
     local posY = 237
     criarInimigo(posX, posY, "normal")
@@ -210,6 +209,7 @@ local function atualizarTiros(dt)
   end
 end
 function CarregarChuva()
+  jogo.imagemChuva:setFilter("nearest", "nearest")
   jogo.chuva = LG.newParticleSystem(jogo.imagemChuva, 1000) -- Máximo de 1000 partículas
   jogo.chuva:setParticleLifetime(0.95) -- Tempo de vida das partículas (1 a 2 segundos)
   jogo.chuva:setEmissionRate(100) -- Taxa de emissão (partículas por segundo)
@@ -219,6 +219,7 @@ function CarregarChuva()
 end
 
 local function desenharTiros()
+  LG.setDefaultFilter("nearest", "nearest")
   for _, tiro in ipairs(tiros) do
     LG.setColor(1, 0.8, 0.2) -- Cor vermelha para os tiros
     LG.rectangle("fill", tiro.x, tiro.y, tiro.largura, tiro.altura)
@@ -263,22 +264,26 @@ local function atualizarInimigos(dt)
 end
 local function desenharVida()
   local coracaoLargura = player.coracao:getWidth() * 1.5
+  
+
   for i = 1, 3 do
     local coracaoX = 10 + (i - 1) * (coracaoLargura + 5) -- Espaçamento entre os corações
-    love.graphics.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
+    LG.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
+    player.coracao:setFilter("nearest", "nearest")
+    player.coracaoVazio:setFilter("nearest", "nearest")
     if player.vida <= 175 then
       if i == 3 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
+        LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 120 then
       if i == 2 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
+        LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 75 then
       if i == 1 then
-        love.graphics.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
+        LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
   end
@@ -288,6 +293,7 @@ end
 -- Função para desenhar os inimigos
 local function desenharInimigos()
   for _, inimigo in ipairs(inimigos) do
+    inimigo.spIS:setFilter("nearest", "nearest")
     if inimigo.danoTimer > 0 then
       LG.setColor(1, 0, 0, 0.8) -- Vermelho
     else
@@ -363,7 +369,7 @@ local function atualizarTamanhoTela()
     jogo.escalaBloco = 1.875
     jogo.soma = 330
   end
-  carregarLinhas() -- Recarrega os colliders das linhas
+  carregarLinhas() 
     if jogo.telaCheia ~= jogo.telaCheiaAnterior then
     resetarEixoY()
     jogo.telaCheiaAnterior = jogo.telaCheia -- Atualiza o estado anterior
@@ -532,9 +538,6 @@ function love.update(dt)
   elseif cam.x > jogo.mapaLargura - jogo.larguraTela / 2 then
     cam.x = jogo.mapaLargura - jogo.larguraTela / 2
   end
-
-
-
   atualizarInimigos(dt)
   atualizarTiros(dt)
 end
@@ -577,14 +580,13 @@ function love.draw()
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
     LG.scale(jogo.escala, jogo.escala)
-
     gameMap:drawLayer(gameMap.layers["Fundo"])
     gameMap:drawLayer(gameMap.layers["Chao"])
 
     LG.pop() -- Restaura o estado da matriz de transformação
-    LG.setDefaultFilter("nearest", "nearest")
+    
     desenharPlayer()
-
+    
     --world:draw()
     desenharInimigos()
     desenharTiros()
