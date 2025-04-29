@@ -308,8 +308,15 @@ local function desenharInimigos()
     local vidaPercentual = inimigo.vida / 100 
     LG.setColor(0, 0, 0)
     LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura, barraAltura)
-    LG.setColor(0, 1, 0)
+    if inimigo.vida < 40 then
+      LG.setColor(1, 0, 0) 
+    elseif inimigo.vida >= 40 and inimigo.vida <= 60 then
+      LG.setColor(1, 0.5, 0) 
+    else
+      LG.setColor(0, 1, 0)
+    end
     LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura * vidaPercentual, barraAltura)
+    
   end
 
 end
