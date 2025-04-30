@@ -1,9 +1,10 @@
 sounds = {
     src1 = love.audio.newSource("soud/8bit-music.mp3", "stream"),
-    src2 = love.audio.newSource("soud/cottagecore.mp3", "stream"),
+    src2 = love.audio.newSource("soud/cottagecore.wav", "stream"),
     src3 = love.audio.newSource("soud/jump.wav", "stream"),
     src4 = love.audio.newSource("soud/footstep.wav", "stream"),
     src5 = love.audio.newSource("soud/Atirando.mp3", "stream"),
+    src6 = love.audio.newSource("soud/levelup.wav", "stream"),
 }
 
 function sons(slider, jogo, efeito)
@@ -15,6 +16,7 @@ function sons(slider, jogo, efeito)
     else
         sounds.src1:stop()
         sounds.src2:play()
+        sounds.src2:setVolume(0.01)
     end
 
     -- Reproduz o efeito de som correspondente
@@ -24,9 +26,14 @@ function sons(slider, jogo, efeito)
         sounds.src4:play()
     elseif efeito == "para" then
         sounds.src4:stop()
+    elseif efeito == "parar" then
+        sounds.src4:stop()
     elseif efeito == "atirar" then
         sounds.src5:play()
+    elseif efeito == "up" then
+       sounds.src6:play()
     end
+
 
     -- Retorna a tabela de sons para uso posterior, se necessário
     return sounds
