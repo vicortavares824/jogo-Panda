@@ -47,8 +47,6 @@ polyline = {
   { x = 4736, y = 96 },
   { x = 4800, y = 96 }
 }
-local virtual_width = 800
-local virtual_height = 600
 local jogo = {
   sons = { value = 60, max = 100 },
   brilho = { value = 80, max = 100 },
@@ -122,7 +120,7 @@ local function criarInimigo(x, y, tipo)
     grid = nil,
     anim = nil,
     limiteEsquerdo = x - 80,
-    limiteDireito = x + 400,
+    limiteDireito = x + 200,
     danoTimer = 0 -- Tempo em que o inimigo ficará vermelho
   }
   inimigo.collider:setType("dynamic")
@@ -170,11 +168,17 @@ end
 function carregarInimigos()
   inimigos = {}
   local inimigosIniciais = 7
+  local posX = 0
+  -- Posição aleatória no eixo X 
+  local posY = 237
+  local limite = 1200
+  math.randomseed(os.time())
   for i = 1, inimigosIniciais do
-
-    local posX = math.random(100, jogo.mapaLargura) -- Posição aleatória no eixo X
-    local posY = 237
+     -- Gera uma semente aleatória
+    posX = math.random(posX + 100, limite) -- Gera uma posição aleatória no eixo X
     criarInimigo(posX, posY, "normal")
+    posX = i * 1200
+    limite = (i+1) * 1200
   end
 end
 local function desenharMiniMapa()
@@ -473,7 +477,7 @@ function love.load()
   player.anim = player.animation.left
   player.lado = player.spLeft
 
-  jogo.fonte = LG.newFont('font.ttf', 32)
+  jogo.fonte = LG.newFont('font.TTF', 32)
   LG.setFont(jogo.fonte)
   player.collider = world:newBSGRectangleCollider(400, 250, 45, 70, 10)
   player.collider:setType('dynamic')
@@ -692,6 +696,5 @@ function love.draw()
     LG.setColor(0.5, 0.5, 0.5) -- Cor cinza médio para o texto
     suit.Label("Game Over", jogo.posicaoBotaoX, jogo.posicaoBotaoY, jogo.larguraBotao, jogo.alturaBotao)
   end
-  -- Mova o suit.draw() para o final para que ele seja desenhado por último
   suit.draw()
 end
