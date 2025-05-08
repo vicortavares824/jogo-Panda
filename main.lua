@@ -125,6 +125,7 @@ local function criarInimigo(x, y, tipo)
   }
   inimigo.collider:setType("dynamic")
   inimigo.collider:setFixedRotation(true)
+  inimigo.collider:setFriction(0) -- Reduz o atrito para evitar travamentos
   inimigo.collider:setMass(1)
   inimigo.grid = anim8.newGrid(64, 64, inimigo.spIS:getWidth(), inimigo.spIS:getHeight())
   inimigo.anim = anim8.newAnimation(inimigo.grid('1-6', 1), 0.2)
@@ -171,14 +172,14 @@ function carregarInimigos()
   local posX = 0
   -- Posição aleatória no eixo X 
   local posY = 237
-  local limite = 1200
+  local limite = 1280
   math.randomseed(os.time())
   for i = 1, inimigosIniciais do
      -- Gera uma semente aleatória
     posX = math.random(posX + 100, limite) -- Gera uma posição aleatória no eixo X
     criarInimigo(posX, posY, "normal")
-    posX = i * 1200
-    limite = (i+1) * 1200
+    posX = i * 1280
+    limite = (i+1) * 1280
   end
 end
 local function desenharMiniMapa()
@@ -318,6 +319,10 @@ local function atualizarInimigos(dt)
         player.danoTimer = 0.5
         player.collider:applyLinearImpulse(0, -50) -- Aplica
     end
+    end
+    if math.abs(velX) < 1 then
+      local impulso = inimigo.lado == "left" and -10 or 10
+      inimigo.collider:applyLinearImpulse(0, impulso)
     end
 
     inimigo.anim:update(dt)
@@ -657,7 +662,6 @@ function love.draw()
     
     sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
-
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
     LG.scale(jogo.escala, jogo.escala)

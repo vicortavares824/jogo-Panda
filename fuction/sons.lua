@@ -16,7 +16,7 @@ function sons(slider, jogo, efeito)
     else
         sounds.src1:stop()
         sounds.src2:play()
-        sounds.src2:setVolume(0.01)
+        sounds.src2:setVolume(0.01) 
     end
 
     -- Reproduz o efeito de som correspondente
