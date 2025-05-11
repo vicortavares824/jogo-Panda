@@ -655,12 +655,24 @@ function love.draw()
     )
     jogo.exibirBotoes = not jogo.exibirMensagem2
   end
+ if jogo.exibirMensagem1 then
+      jogo.estado = "cutcine"
+  if jogo.estado == "cutcine" then
+    if not cutscene then
+      cutscene = LG.newVideo('sprits/cutcine.ogv')
+      cutscene:play() -- Inicia a reprodução do vídeo
+    end
+    if cutscene:isPlaying() then
+     LG.draw(cutscene, 0, 0, 0, 1, 1)
+    end
 
-  if jogo.exibirMensagem1 then
-   
-    
-   if not cutscene:isPlaying() then
-     sons(jogo.sons, false, nil)
+       
+
+    if not cutscene:isPlaying() then
+      jogo.estado = "jogando"
+    end
+  elseif jogo.estado == "jogando" then
+    sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
@@ -678,12 +690,12 @@ function love.draw()
     cam:detach()
     desenharVida()
     desenharMiniMapa()
-   elseif cutscene:isPlaying() then
-      cutscene:seek(0) -- Volta para o início do vídeo
-      cutscene:play()
-    
-    end 
+     
+    end
   end
+
+
+  
   if player.vida <= 0 then
     -- Define as cores do botão
     suit.theme.color = {
