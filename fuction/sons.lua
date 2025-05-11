@@ -13,7 +13,10 @@ function sons(slider, jogo, efeito)
     if jogo then
         sounds.src1:play()
         sounds.src2:stop()
-    else
+    elseif not jogo then
+        sounds.src2:stop()
+        sounds.src1:stop()
+    elseif not jogo and  efeito == "jogando"  then
         sounds.src1:stop()
         sounds.src2:play()
         sounds.src2:setVolume(0.01) 
