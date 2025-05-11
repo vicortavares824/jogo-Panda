@@ -465,8 +465,6 @@ function love.load()
   CarregarChuva()
   jogo.imagemFundo:play()
   jogo.imagemFundo:setFilter("linear", "linear")
- 
-
   world = wf.newWorld(0, 500, true)
   cam = camera()
   sons(jogo.sons, true, true)
@@ -659,8 +657,10 @@ function love.draw()
   end
 
   if jogo.exibirMensagem1 then
+   
     
-    sons(jogo.sons, false, nil)
+   if not cutscene:isPlaying() then
+     sons(jogo.sons, false, nil)
     jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
     cam:attach()
     LG.push() -- Salva o estado atual da matriz de transformação
@@ -678,8 +678,11 @@ function love.draw()
     cam:detach()
     desenharVida()
     desenharMiniMapa()
-   
-   
+   elseif cutscene:isPlaying() then
+      cutscene:seek(0) -- Volta para o início do vídeo
+      cutscene:play()
+    
+    end 
   end
   if player.vida <= 0 then
     -- Define as cores do botão
