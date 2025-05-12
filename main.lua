@@ -603,9 +603,7 @@ function love.update(dt)
       player.lado = player.spLeft -- Atirando para a esquerda
       player.anim:gotoFrame(2)
     end
-    if jogo.exibirMensagem1 then
-      sons(jogo.sons, false, "para")
-    end
+    
   end
   world:update(dt)
   player.x = player.collider:getX()
@@ -657,11 +655,14 @@ function love.draw()
     if jogo.estado == "cutscene" then
       if not cutscene then
         cutscene = LG.newVideo('sprits/cutcine.ogv')
+        cutscene:setFilter("linear", "linear")
         cutscene:play() -- Inicia a reprodução do vídeo
         sons(jogo.sons, false, nil)
       end
       if cutscene:isPlaying() then
-        LG.draw(cutscene, 0, 0, 0, 1, 1)
+        escala = math.max(jogo.larguraTela/cutscene:getWidth(), jogo.alturaTela/cutscene:getHeight())
+        LG.draw(cutscene, 0, 0, 0,escala,escala)
+        player.vida = 200
       end
       if not cutscene:isPlaying() then
         jogo.estado = "jogando"
@@ -675,11 +676,8 @@ function love.draw()
       LG.scale(jogo.escala, jogo.escala)
       gameMap:drawLayer(gameMap.layers["Fundo"])
       gameMap:drawLayer(gameMap.layers["Chao"])
-
       LG.pop() -- Restaura o estado da matriz de transformação
-
       desenharPlayer()
-
       --world:draw()
       desenharInimigos()
       desenharTiros()
