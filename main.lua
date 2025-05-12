@@ -79,7 +79,8 @@ local jogo = {
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
-  pontuacao = 0
+  pontuacao = 0,
+  cutscene = nil,
 }
 local player = {
   x = 345,
@@ -464,6 +465,7 @@ function love.load()
   CarregarChuva()
   jogo.imagemFundo:play()
   jogo.imagemFundo:setFilter("linear", "linear")
+ 
   world = wf.newWorld(0, 500, true)
   cam = camera()
   sons(jogo.sons, true, true)
@@ -653,18 +655,18 @@ function love.draw()
   end
   if jogo.exibirMensagem1 then
     if jogo.estado == "cutscene" then
-      if not cutscene then
-        cutscene = LG.newVideo('sprits/cutcine.ogv')
-        cutscene:setFilter("linear", "linear")
-        cutscene:play() -- Inicia a reprodução do vídeo
+      if not  jogo.cutscene then
+         jogo.cutscene = LG.newVideo('sprits/cutcine.ogv')
+          jogo.cutscene:setFilter("linear", "linear")  
+         jogo.cutscene:play() -- Inicia a reprodução do vídeo
         sons(jogo.sons, false, nil)
       end
-      if cutscene:isPlaying() then
-        escala = math.max(jogo.larguraTela/cutscene:getWidth(), jogo.alturaTela/cutscene:getHeight())
-        LG.draw(cutscene, 0, 0, 0,escala,escala)
+      if  jogo.cutscene:isPlaying() then
+        escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
+        LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
         player.vida = 200
       end
-      if not cutscene:isPlaying() then
+      if not  jogo.cutscene:isPlaying() then
         jogo.estado = "jogando"
       end
     end

@@ -15,19 +15,13 @@ function sons(slider, jogo, efeito)
         sounds.src2:stop()
     elseif not jogo then
         sounds.src1:stop()
-    elseif not jogo and  efeito == "jogando"  then
-        sounds.src1:stop()
-        sounds.src2:play()
-        sounds.src2:setVolume(0.01) 
-    end
+    end 
 
     -- Reproduz o efeito de som correspondente
     if efeito == "pular" then
         sounds.src3:play()
     elseif efeito == "andar" then
         sounds.src4:play()
-        sounds.src2:play()
-        sounds.src2:setVolume(0.01) 
     elseif efeito == "para" then
         sounds.src4:stop()
     elseif efeito == "parar" then
@@ -36,7 +30,12 @@ function sons(slider, jogo, efeito)
         sounds.src5:play()
     elseif efeito == "up" then
        sounds.src6:play()
+    elseif efeito == "jogando"  then
+        sounds.src1:stop()
+        sounds.src2:play()
+        sounds.src2:setVolume(0.01) 
     end
+    
 
 
     -- Retorna a tabela de sons para uso posterior, se necessário
