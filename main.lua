@@ -176,9 +176,14 @@ function carregarInimigos()
   local limite = 1280
   math.randomseed(os.time())
   for i = 1, inimigosIniciais do
+    if i >= 4 then
+      criarInimigo(posX, posY, "picles")
+    else
+       criarInimigo(posX, posY, "normal")
+    end
     -- Gera uma semente aleatória
     posX = math.random(posX + 100, limite) -- Gera uma posição aleatória no eixo X
-    criarInimigo(posX, posY, "normal")
+   
     posX = i * 1280
     limite = (i + 1) * 1280
   end
@@ -361,6 +366,9 @@ end
 -- Função para desenhar os inimigos
 local function desenharInimigos()
   for _, inimigo in ipairs(inimigos) do
+    if inimigo.tipo == "picles" then
+      inimigo.spIS = LG.newImage('Sprit shet/inimigo picles.png')
+    end
     inimigo.spIS:setFilter("nearest", "nearest")
     if inimigo.danoTimer > 0 then
       LG.setColor(1, 0, 0, 0.8) -- Vermelho
