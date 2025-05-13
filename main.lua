@@ -169,23 +169,25 @@ local function reiniciarJogo()
 end
 function carregarInimigos()
   inimigos = {}
-  local inimigosIniciais = 7
+  local inimigosIniciais = 10
   local posX = 0
   -- Posição aleatória no eixo X
   local posY = 237
-  local limite = 1280
+  local limite = 900
   math.randomseed(os.time())
-  for i = 1, inimigosIniciais do
-    if i >= 4 then
+  for i = 0, inimigosIniciais do
+    if i >= 2 and i <=3 then
       criarInimigo(posX, posY, "picles")
+    elseif i==5 then
+       criarInimigo(posX, posY, "master")
     else
-       criarInimigo(posX, posY, "normal")
+      criarInimigo(posX, posY, "normal")
     end
     -- Gera uma semente aleatória
     posX = math.random(posX + 100, limite) -- Gera uma posição aleatória no eixo X
    
-    posX = i * 1280
-    limite = (i + 1) * 1280
+    posX = i * 900
+    limite = (i + 1) * 900
   end
 end
 
@@ -367,7 +369,13 @@ end
 local function desenharInimigos()
   for _, inimigo in ipairs(inimigos) do
     if inimigo.tipo == "picles" then
+      inimigo.speed = 300
       inimigo.spIS = LG.newImage('Sprit shet/inimigo picles.png')
+    end
+    if inimigo.tipo == "master" then
+      inimigo.y = inimigo.y + 10
+      inimigo.speed = 200
+      inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
     end
     inimigo.spIS:setFilter("nearest", "nearest")
     if inimigo.danoTimer > 0 then
@@ -501,6 +509,7 @@ end
 
 -- Função de atualização do jogo
 function love.update(dt)
+ print(player.x)
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
