@@ -23,9 +23,8 @@ function sons(slider, jogo, efeito)
     elseif efeito == "andar" then
         sounds.src4:play()
     elseif efeito == "para" then
-        sounds.src4:stop()
-    elseif efeito == "parar" then
-        sounds.src4:stop()
+        sounds.src4:pause()
+        
     elseif efeito == "atirar" then
         sounds.src5:play()
     elseif efeito == "up" then
@@ -34,6 +33,7 @@ function sons(slider, jogo, efeito)
         sounds.src1:stop()
         sounds.src2:play()
         sounds.src2:setVolume(0.01) 
+        sounds.src4:setVolume(0.5) 
     end
     
 

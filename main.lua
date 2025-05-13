@@ -75,7 +75,7 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 1.875,
-  estado = "cutscene",
+  estado = "jogando",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
@@ -255,7 +255,7 @@ local function atualizarTiros(dt)
 
       -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos)
       if tiro.x < inimigo.x and tiro.x + tiro.largura > inimigo.x and
-          tiro.y < inimigo.y and tiro.y + tiro.altura + 25 > inimigo.y then
+          tiro.y < inimigo.y + inimigo.spIS:getHeight()/2 and tiro.y + tiro.altura + inimigo.spIS:getHeight() > inimigo.y + inimigo.spIS:getHeight()/2 then
         -- Reduz a vida do inimigo
 
         inimigo.vida = inimigo.vida - 10
@@ -330,9 +330,10 @@ local function atualizarInimigos(dt)
       end
     end
     if math.abs(velX) < 1 then
-      local impulso = inimigo.lado == "left" and -10 or 10
+      local impulso = inimigo.lado == "left" and -15 or 15
       inimigo.collider:applyLinearImpulse(0, impulso)
     end
+   
 
     inimigo.anim:update(dt)
   end
@@ -373,7 +374,7 @@ local function desenharInimigos()
       inimigo.spIS = LG.newImage('Sprit shet/inimigo picles.png')
     end
     if inimigo.tipo == "master" then
-      inimigo.y = inimigo.y + 10
+      inimigo.y = inimigo.y - 20
       inimigo.speed = 200
       inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
     end
@@ -430,8 +431,8 @@ local function desenharPlayer()
   elseif jogo.pontuacao == 40 then
     LG.setColor(0.1, 0.5, 1, 0.9) -- Azul
     sons(jogo.sons, false, "up")
-  else
-    sons(jogo.sons, false, "parar")
+  elseif not jogo.exibirMensagem1 then
+    sons(jogo.sons, false, "para")
     LG.setColor(1, 1, 1) -- Branco (cor normal)
   end
 
@@ -509,7 +510,7 @@ end
 
 -- Função de atualização do jogo
 function love.update(dt)
- print(player.x)
+
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
@@ -622,7 +623,9 @@ function love.update(dt)
       player.lado = player.spLeft -- Atirando para a esquerda
       player.anim:gotoFrame(2)
     end
-    
+    if jogo.exibirMensagem1 then
+      sons(jogo.sons, false, "para")
+    end
   end
   world:update(dt)
   player.x = player.collider:getX()
