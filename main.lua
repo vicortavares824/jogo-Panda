@@ -149,7 +149,7 @@ local function reiniciarJogo()
   -- Redefine as variáveis do jogador
   player.x = 345
   player.y = 134
-  player.vida = 200
+  player.vida = 100
   player.danoTimer = 0
   player.collider:setPosition(400, 250)
 
@@ -166,6 +166,7 @@ local function reiniciarJogo()
 
   -- Reseta outras variáveis do jogo, se necessário
   jogo.exibirMensagem1 = true
+  jogo.estado = "jogando"
 end
 function carregarInimigos()
   inimigos = {}
@@ -347,17 +348,17 @@ local function desenharVida()
     LG.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
     player.coracao:setFilter("nearest", "nearest")
     player.coracaoVazio:setFilter("nearest", "nearest")
-    if player.vida <= 175 then
+    if player.vida <= 75 then
       if i == 3 then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
-    if player.vida <= 120 then
+    if player.vida <= 50 then
       if i == 2 then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
-    if player.vida <= 75 then
+    if player.vida <= 25 then
       if i == 1 then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
@@ -535,7 +536,11 @@ function love.update(dt)
   end
 
   if LK.isDown("escape") then
-    jogo.exibirBotoes = true
+   if  jogo.exibirBotoes == true  then
+     jogo.exibirBotoes = false
+   elseif jogo.exibirBotoes == false then
+      jogo.exibirBotoes = true
+   end
   end
 
 
@@ -684,13 +689,13 @@ function love.draw()
       if  jogo.cutscene:isPlaying() then
         escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
         LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
-        player.vida = 200
+        player.vida = 100
       end
       if not  jogo.cutscene:isPlaying() then
         jogo.estado = "jogando"
       end
     end
-    if jogo.estado == "jogando" then
+    if jogo.estado == "jogando" or jogo.estado == "pausado" then
       sons(jogo.sons, false, "jogando")
       jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
       cam:attach()
@@ -706,29 +711,31 @@ function love.draw()
       cam:detach()
       desenharVida()
       desenharMiniMapa()
+      
     end
+    
   end
-
-
-
-  if player.vida <= 0 then
+if player.vida <= 0 then
     -- Define as cores do botão
-    suit.theme.color = {
-      normal = { bg = { 0.2, 0.2, 0.2 }, fg = { 1, 1, 1 } },
-      hovered = { bg = { 0.5, 0.5, 0.5 }, fg = { 0, 0, 1 } },
-      active = { bg = { 0.1, 0.1, 0.1 }, fg = { 0, 1, 0 } }
-    }
-    if player.vida <= 0 then
+    
+    
       jogo.estado = "pausado" -- Altera o estado do jogo para "pausado"
-    end
+    
 
     if suit.Button("Reiniciar", jogo.posicaoBotaoX, jogo.posicaoBotaoY + 50, jogo.larguraBotao, jogo.alturaBotao).hit then
       reiniciarJogo()
     end
 
     -- Exibe o texto "Game Over"
-    LG.setColor(0.5, 0.5, 0.5) -- Cor cinza médio para o texto
+    LG.setColor(0.5, 0.5, 0.5,0.5) -- Cor cinza médio para o texto
     suit.Label("Game Over", jogo.posicaoBotaoX, jogo.posicaoBotaoY, jogo.larguraBotao, jogo.alturaBotao)
   end
+suit.theme.color = {
+      normal = { bg = { 0.2, 0.2, 0.2 }, fg = { 1, 1, 1 } },
+      hovered = { bg = { 0.5, 0.5, 0.5 }, fg = { 0, 0, 1 } },
+      active = { bg = { 0.1, 0.1, 0.1 }, fg = { 0, 1, 0 } }
+    }
+
   suit.draw()
+  
 end
