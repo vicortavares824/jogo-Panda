@@ -29,11 +29,12 @@ function sons(slider, jogo, efeito)
         sounds.src5:play()
     elseif efeito == "up" then
        sounds.src6:play()
+       sounds.src6:setVolume(0.5) 
     elseif efeito == "jogando"  then
         sounds.src1:stop()
         sounds.src2:play()
         sounds.src2:setVolume(0.01) 
-        sounds.src4:setVolume(0.5) 
+        sounds.src4:setVolume(0.3) 
     end
     
 

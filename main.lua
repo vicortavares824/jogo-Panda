@@ -427,11 +427,14 @@ local function carregarLinhas()
   end
 end
 local function desenharPlayer()
+  local pontuacao = 40
   if player.danoTimer > 0 then
     LG.setColor(1, 0, 0)         -- Vermelho
-  elseif jogo.pontuacao == 40 then
+  elseif jogo.pontuacao == pontuacao then
+    player.speed = 300
     LG.setColor(0.1, 0.5, 1, 0.9) -- Azul
     sons(jogo.sons, false, "up")
+    pontuacao = pontuacao + 40
   elseif not jogo.exibirMensagem1 then
     sons(jogo.sons, false, "para")
     LG.setColor(1, 1, 1) -- Branco (cor normal)
@@ -515,7 +518,8 @@ function love.update(dt)
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
-      tempoCooldownTiro = 0.5                    -- Restaura o cooldown original
+      tempoCooldownTiro = 0.5      
+      player.speed = 200
     end
   end
   jogo.chuva:update(dt)
@@ -647,6 +651,10 @@ function love.update(dt)
   end
   atualizarInimigos(dt)
   atualizarTiros(dt)
+  --if player.x >= 8040 then
+    --jogo.estado = "cutscene2"
+  --end
+  
 end
 
 -- Função de desenho do jogo
@@ -712,6 +720,22 @@ function love.draw()
       desenharVida()
       desenharMiniMapa()
       
+    end
+    if jogo.estado == "cutscene2" then
+      if not  jogo.cutscene then
+         jogo.cutscene = LG.newVideo('sprits/cutcine2.ogv')
+          jogo.cutscene:setFilter("linear", "linear")  
+         jogo.cutscene:play() -- Inicia a reprodução do vídeo
+        sons(jogo.sons, false, nil)
+      end
+      if  jogo.cutscene:isPlaying() then
+        escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
+        LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
+        player.vida = 100
+      end
+      if not  jogo.cutscene:isPlaying() then
+        jogo.estado = "jogando2"
+      end
     end
     
   end
