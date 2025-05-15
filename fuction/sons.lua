@@ -24,6 +24,8 @@ function sons(slider, jogo, efeito)
         sounds.src4:play()
     elseif efeito == "para" then
         sounds.src4:pause()
+    elseif efeito == "cutscene2" then
+        sounds.src2:pause()
         
     elseif efeito == "atirar" then
         sounds.src5:play()

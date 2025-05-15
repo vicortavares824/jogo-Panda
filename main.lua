@@ -85,7 +85,7 @@ local jogo = {
 local player = {
   x = 345,
   y = 134,
-  speed = 200,
+  speed = 2000,
   spLeft = LG.newImage('Sprit shet/panda andando.png'),
   spRiht = LG.newImage('Sprit shet/panda andando right.png'),
   spAtira = LG.newImage('Sprit shet/panda atirando.png'),
@@ -114,7 +114,7 @@ local function criarInimigo(x, y, tipo)
     y = y,
     speed = 100,
     tipo = tipo,
-    vida = 100,
+    vida = 10,
     lado = "left",
     collider = world:newRectangleCollider(x, y, 60, 70),
     spIS = LG.newImage('Sprit shet/inimigo Sushi.png'),
@@ -519,7 +519,7 @@ function love.update(dt)
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
       tempoCooldownTiro = 0.5      
-      player.speed = 200
+      player.speed = 2000
     end
   end
   jogo.chuva:update(dt)
@@ -651,9 +651,10 @@ function love.update(dt)
   end
   atualizarInimigos(dt)
   atualizarTiros(dt)
-  --if player.x >= 8040 then
-    --jogo.estado = "cutscene2"
-  --end
+  
+  if player.x >= 7457 then
+    jogo.estado = "cutscene2"
+  end
   
 end
 
@@ -722,6 +723,7 @@ function love.draw()
       
     end
     if jogo.estado == "cutscene2" then
+      sons(jogo.sons, false, "cutscene2")
       if not  jogo.cutscene then
          jogo.cutscene = LG.newVideo('sprits/cutcine2.ogv')
           jogo.cutscene:setFilter("linear", "linear")  
@@ -730,6 +732,7 @@ function love.draw()
       end
       if  jogo.cutscene:isPlaying() then
         escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
+        print(escala)
         LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
         player.vida = 100
       end
