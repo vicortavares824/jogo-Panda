@@ -75,12 +75,13 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 1.875,
-  estado = "jogando",
+  estado = "cutscene2",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
   pontuacao = 0,
   cutscene = nil,
+  movimento = 0,
 }
 local player = {
   x = 345,
@@ -522,6 +523,10 @@ function love.update(dt)
       player.speed = 2000
     end
   end
+  if jogo.estado == "cutscene2" then
+    jogo.movimento = jogo.movimento - 70 *dt
+  end
+ 
   jogo.chuva:update(dt)
   local isMove = false
   if jogo.imagemFundo:isPlaying() == false then
@@ -652,9 +657,10 @@ function love.update(dt)
   atualizarInimigos(dt)
   atualizarTiros(dt)
   
-  if player.x >= 7457 then
+  if player.x >= 7457 and jogo.estado =="jogando" then
     jogo.estado = "cutscene2"
   end
+  
   
 end
 
@@ -704,7 +710,7 @@ function love.draw()
         jogo.estado = "jogando"
       end
     end
-    if jogo.estado == "jogando" or jogo.estado == "pausado" then
+    if jogo.estado == "jogando" or jogo.estado == "pausado" or jogo.estado == "jogando2" then
       sons(jogo.sons, false, "jogando")
       jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
       cam:attach()
@@ -730,10 +736,16 @@ function love.draw()
          jogo.cutscene:play() -- Inicia a reprodução do vídeo
         sons(jogo.sons, false, nil)
       end
+       if jogo.cutscene:isPlaying() == false then
+          jogo.cutscene:seek(0) -- Volta para o início do vídeo
+          jogo.cutscene:play()  -- Inicia a reprodução novamente
+          jogo.movimento = 0
+        end
       if  jogo.cutscene:isPlaying() then
+       
         escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
-        print(escala)
-        LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
+         print(jogo.movimento)
+        LG.draw( jogo.cutscene,jogo.movimento , 0, 0,escala,escala)
         player.vida = 100
       end
       if not  jogo.cutscene:isPlaying() then
