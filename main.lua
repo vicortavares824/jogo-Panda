@@ -15,6 +15,69 @@ local cooldownTiro = 0       -- Tempo restante para o próximo tiro
 local tempoCooldownTiro = 0.5
 local tempoBonusCooldown = 0 -- Tempo restante para o bônus de cooldown
 -- Configurações e variáveis do jogo
+polyline2 = {
+            { x = 0, y = 0 },
+            { x = 16.25, y = 0.25 },
+            { x = 16.25, y = 16 },
+            { x = 416.5, y = 15.75 },
+            { x = 416.25, y = 0 },
+            { x = 432.75, y = -0.25 },
+            { x = 432.25, y = -16 },
+            { x = 480.75, y = -16.25 },
+            { x = 480.75, y = -32 },
+            { x = 624.75, y = -32.5 },
+            { x = 624.75, y = -48.25 },
+            { x = 688.5, y = -48.5 },
+            { x = 688.25, y = -64.75 },
+            { x = 736, y = -65.5 },
+            { x = 736, y = -80.25 },
+            { x = 784.25, y = -80.25 },
+            { x = 784.25, y = -64 },
+            { x = 1104.5, y = -64.5 },
+            { x = 1104.75, y = -48.25 },
+            { x = 1361, y = -48 },
+            { x = 1361, y = -31.5 },
+            { x = 1537, y = -32 },
+            { x = 1537.25, y = -16.75 },
+            { x = 1568.5, y = -16.25 },
+            { x = 1569, y = 15.5 },
+            { x = 1584.5, y = 15.25 },
+            { x = 2032.25, y = 15.75 },
+            { x = 2032.5, y = -0.25 },
+            { x = 2129.25, y = -0.75 },
+            { x = 2129, y = -16.25 },
+            { x = 2145.25, y = -16.25 },
+            { x = 2145, y = -32 },
+            { x = 2160.5, y = -32.25 },
+            { x = 2160.75, y = -17 },
+            { x = 2177, y = -17 },
+            { x = 2177, y = -0.75 },
+            { x = 2512.25, y = -0.25 },
+            { x = 2512.25, y = 16 },
+            { x = 2944.25, y = 15 },
+            { x = 2944.25, y = -0.75 },
+            { x = 2992.75, y = -1 },
+            { x = 2992.75, y = -16.75 },
+            { x = 3008.75, y = -16.5 },
+            { x = 3008.75, y = -32.25 },
+            { x = 3024.75, y = -32.5 },
+            { x = 3024.75, y = -16.5 },
+            { x = 3040.5, y = -16.5 },
+            { x = 3040.75, y = -0.75 },
+            { x = 3472.5, y = -0.25 },
+            { x = 3472, y = -16.5 },
+            { x = 3616, y = -16.75 },
+            { x = 3615.75, y = -32.75 },
+            { x = 3936.25, y = -32.5 },
+            { x = 3936.5, y = -47.75 },
+            { x = 4337.25, y = -48 },
+            { x = 4337.75, y = -0.5 },
+            { x = 4385, y = -0.25 },
+            { x = 4385.25, y = 47.5 },
+            { x = 4401, y = 47.25 },
+            { x = 4401.5, y = 63.75 },
+            { x = 4800.25, y = 63.25 }
+          }
 polyline = {
   { x = 0,    y = 0 },
   { x = 704,  y = 0 },
@@ -74,7 +137,7 @@ local jogo = {
   mapLargura = 1,
   mapAltura = 1,
   escala = 1,
-  escalaBloco = 1.875,
+  escalaBloco = 0,
   estado = "cutscene2",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
@@ -380,6 +443,11 @@ local function desenharInimigos()
       inimigo.speed = 200
       inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
     end
+    if inimigo.tipo == "microzila" then
+      inimigo.speed = 150
+      inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
+      inimigo.vida = 300
+    end
     inimigo.spIS:setFilter("nearest", "nearest")
     if inimigo.danoTimer > 0 then
       LG.setColor(1, 0, 0, 0.8) -- Vermelho
@@ -415,7 +483,8 @@ local function carregarLinhas()
   Walls = {}       -- Reinicia a tabela Walls
 
   -- Cria novos colliders com base na polyline
-  for i = 1, #polyline - 1 do
+
+    for i = 1, #polyline - 1 do
     local p1 = polyline[i]
     local p2 = polyline[i + 1]
     local scaled_x1 = p1.x * jogo.escalaBloco
@@ -426,6 +495,31 @@ local function carregarLinhas()
     wall:setType('static')
     table.insert(Walls, wall)
   end
+  
+
+end
+local function carregarLinhas2()
+  -- Limpa os colliders existentes em Walls
+  for _, wall in ipairs(Walls) do
+    wall:destroy() -- Destroi os colliders antigos
+  end
+  Walls = {}       -- Reinicia a tabela Walls
+
+  -- Cria novos colliders com base na polyline
+
+    for i = 1, #polyline2 - 1 do
+    local p1 = polyline2[i]
+    local p2 = polyline2[i + 1]
+    local scaled_x1 = p1.x * jogo.escalaBloco
+    local scaled_y1 = p1.y * jogo.escalaBloco
+    local scaled_x2 = p2.x * jogo.escalaBloco
+    local scaled_y2 = p2.y * jogo.escalaBloco
+    local wall = world:newLineCollider(scaled_x1, scaled_y1 + jogo.soma-30, scaled_x2, scaled_y2 + jogo.soma-30)
+    wall:setType('static')
+    table.insert(Walls, wall)
+  end
+  
+
 end
 local function desenharPlayer()
   local pontuacao = 40
@@ -458,6 +552,19 @@ local function resetarEixoY()
     inimigo.y = posicaoInicialYInimigos
   end
 end
+local function resetarEixoY2()
+  -- Reseta o eixo Y do jogador
+  local posicaoInicialYJogador = 290 -- Defina a posição inicial no eixo Y
+  player.collider:setY(posicaoInicialYJogador)
+  player.y = posicaoInicialYJogador
+
+  -- Reseta o eixo Y dos inimigos
+  local posicaoInicialYInimigos = 237 -- Defina a posição inicial no eixo Y para os inimigos
+  for _, inimigo in ipairs(inimigos) do
+    inimigo.collider:setY(posicaoInicialYInimigos)
+    inimigo.y = posicaoInicialYInimigos
+  end
+end
 local function atualizarTamanhoTela()
   jogo.larguraTela = LG.getWidth()
   jogo.alturaTela = LG.getHeight()
@@ -474,11 +581,14 @@ local function atualizarTamanhoTela()
     jogo.escalaBloco = 1.875
     jogo.soma = 330
   end
-  carregarLinhas()
   if jogo.telaCheia ~= jogo.telaCheiaAnterior then
     resetarEixoY()
     jogo.telaCheiaAnterior = jogo.telaCheia -- Atualiza o estado anterior
   end
+  if jogo.estado == "jogando" or jogo.estado == "cutscene" then
+    carregarLinhas()
+  end
+  
 end
 
 
@@ -510,12 +620,18 @@ function love.load()
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
   carregarInimigos()
-  carregarLinhas()
+  if jogo.estado == "jogando" or jogo.estado == "cutscene" then
+    carregarLinhas()
+  end
+  if jogo.estado == "jogando2" or jogo.estado == "cutscene2" then
+    carregarLinhas2()
+  end
+  
 end
 
 -- Função de atualização do jogo
 function love.update(dt)
-
+    print(player.x)
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
@@ -658,7 +774,9 @@ function love.update(dt)
   atualizarTiros(dt)
   
   if player.x >= 7457 and jogo.estado =="jogando" then
+    jogo.cutscene = nil
     jogo.estado = "cutscene2"
+    
   end
   
   
@@ -704,13 +822,13 @@ function love.draw()
       if  jogo.cutscene:isPlaying() then
         escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
         LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
-        player.vida = 100
+        player.vida = 100 
       end
       if not  jogo.cutscene:isPlaying() then
         jogo.estado = "jogando"
       end
     end
-    if jogo.estado == "jogando" or jogo.estado == "pausado" or jogo.estado == "jogando2" then
+    if jogo.estado == "jogando" or jogo.estado == "pausado" then
       sons(jogo.sons, false, "jogando")
       jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
       cam:attach()
@@ -720,7 +838,26 @@ function love.draw()
       gameMap:drawLayer(gameMap.layers["Chao"])
       LG.pop() -- Restaura o estado da matriz de transformação
       desenharPlayer()
-      --world:draw()
+      world:draw()
+      desenharInimigos()
+      desenharTiros()
+      cam:detach()
+      desenharVida()
+      desenharMiniMapa()
+      
+    end
+     if jogo.estado == "jogando2" or jogo.estado == "pausado" then
+      local gameMap2 = sti('mapa/fase 1/fase2.lua')
+      sons(jogo.sons, false, "jogando")
+      jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
+      cam:attach()
+      LG.push() -- Salva o estado atual da matriz de transformação
+      LG.scale(jogo.escala, jogo.escala)
+      gameMap2:drawLayer(gameMap2.layers["Fundo"])
+      gameMap2:drawLayer(gameMap2.layers["Chao"])
+      LG.pop() -- Restaura o estado da matriz de transformação
+      desenharPlayer()
+      world:draw()
       desenharInimigos()
       desenharTiros()
       cam:detach()
@@ -749,6 +886,8 @@ function love.draw()
         player.vida = 100
       end
       if not  jogo.cutscene:isPlaying() then
+        resetarEixoY2()
+        carregarLinhas2()
         jogo.estado = "jogando2"
       end
     end
