@@ -138,7 +138,7 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 0,
-  estado = "cutscene2",
+  estado = "cutscene",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
@@ -149,7 +149,7 @@ local jogo = {
 local player = {
   x = 345,
   y = 134,
-  speed = 2000,
+  speed = 200,
   spLeft = LG.newImage('Sprit shet/panda andando.png'),
   spRiht = LG.newImage('Sprit shet/panda andando right.png'),
   spAtira = LG.newImage('Sprit shet/panda atirando.png'),
@@ -178,7 +178,7 @@ local function criarInimigo(x, y, tipo)
     y = y,
     speed = 100,
     tipo = tipo,
-    vida = 10,
+    vida = 100,
     lado = "left",
     collider = world:newRectangleCollider(x, y, 60, 70),
     spIS = LG.newImage('Sprit shet/inimigo Sushi.png'),
@@ -232,9 +232,9 @@ local function reiniciarJogo()
   jogo.exibirMensagem1 = true
   jogo.estado = "jogando"
 end
-function carregarInimigos()
+function carregarInimigos(num)
   inimigos = {}
-  local inimigosIniciais = 10
+  local inimigosIniciais = num
   local posX = 0
   -- Posição aleatória no eixo X
   local posY = 237
@@ -428,7 +428,9 @@ local function desenharVida()
       end
     end
   end
-  LG.draw(jogo.chuva, jogo.larguraTela / 2, 0, 0, 1.5, 1.5)
+  if jogo.estado == "jogando" or jogo.estado == "cutscene" then
+    LG.draw(jogo.chuva, jogo.larguraTela / 2, 0, 0, 1.5, 1.5)
+  end
 end
 
 -- Função para desenhar os inimigos
@@ -526,7 +528,7 @@ local function desenharPlayer()
   if player.danoTimer > 0 then
     LG.setColor(1, 0, 0)         -- Vermelho
   elseif jogo.pontuacao == pontuacao then
-    player.speed = 300
+    player.speed = 200
     LG.setColor(0.1, 0.5, 1, 0.9) -- Azul
     sons(jogo.sons, false, "up")
     pontuacao = pontuacao + 40
@@ -557,7 +559,8 @@ local function resetarEixoY2()
   local posicaoInicialYJogador = 290 -- Defina a posição inicial no eixo Y
   player.collider:setY(posicaoInicialYJogador)
   player.y = posicaoInicialYJogador
-
+  player.collider:setX(318)
+  player.x = 318
   -- Reseta o eixo Y dos inimigos
   local posicaoInicialYInimigos = 237 -- Defina a posição inicial no eixo Y para os inimigos
   for _, inimigo in ipairs(inimigos) do
@@ -594,7 +597,9 @@ end
 
 -- Função de carregamento do jogo
 function love.load()
-  CarregarChuva()
+  if jogo.estado == "jogando" or jogo.estado == "cutscene" then
+     CarregarChuva()
+  end
   jogo.imagemFundo:play()
   jogo.imagemFundo:setFilter("linear", "linear")
  
@@ -619,7 +624,7 @@ function love.load()
   player.collider:setType('dynamic')
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
-  carregarInimigos()
+ 
   if jogo.estado == "jogando" or jogo.estado == "cutscene" then
     carregarLinhas()
   end
@@ -631,19 +636,23 @@ end
 
 -- Função de atualização do jogo
 function love.update(dt)
-    print(player.x)
+  print("FPS: " .. love.timer.getFPS())
+  print("Posição do jogador: (" .. player.x .. ", " .. player.y .. ")")
+    
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
       tempoCooldownTiro = 0.5      
-      player.speed = 2000
+      player.speed = 200
     end
   end
   if jogo.estado == "cutscene2" then
     jogo.movimento = jogo.movimento - 70 *dt
   end
  
-  jogo.chuva:update(dt)
+  if jogo.estado == "jogando" then
+    jogo.chuva:update(dt)
+  end
   local isMove = false
   if jogo.imagemFundo:isPlaying() == false then
     jogo.imagemFundo:seek(0) -- Volta para o início do vídeo
@@ -825,6 +834,7 @@ function love.draw()
         player.vida = 100 
       end
       if not  jogo.cutscene:isPlaying() then
+        carregarInimigos(10)
         jogo.estado = "jogando"
       end
     end
@@ -838,7 +848,7 @@ function love.draw()
       gameMap:drawLayer(gameMap.layers["Chao"])
       LG.pop() -- Restaura o estado da matriz de transformação
       desenharPlayer()
-      world:draw()
+      --world:draw()
       desenharInimigos()
       desenharTiros()
       cam:detach()
@@ -856,8 +866,9 @@ function love.draw()
       gameMap2:drawLayer(gameMap2.layers["Fundo"])
       gameMap2:drawLayer(gameMap2.layers["Chao"])
       LG.pop() -- Restaura o estado da matriz de transformação
+      
       desenharPlayer()
-      world:draw()
+      --world:draw()
       desenharInimigos()
       desenharTiros()
       cam:detach()
@@ -886,7 +897,9 @@ function love.draw()
         player.vida = 100
       end
       if not  jogo.cutscene:isPlaying() then
+        
         resetarEixoY2()
+        carregarInimigos(8)
         carregarLinhas2()
         jogo.estado = "jogando2"
       end
