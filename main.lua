@@ -14,70 +14,72 @@ local direcaoAtual = 1       -- 1 para direita, -1 para esquerda
 local cooldownTiro = 0       -- Tempo restante para o próximo tiro
 local tempoCooldownTiro = 0.5
 local tempoBonusCooldown = 0 -- Tempo restante para o bônus de cooldown
+local tempoTiroMicrozila = 2.5
+local intervaloTiroMicrozila = 2.5
 -- Configurações e variáveis do jogo
 polyline2 = {
-            { x = 0, y = 0 },
-            { x = 16.25, y = 0.25 },
-            { x = 16.25, y = 16 },
-            { x = 416.5, y = 15.75 },
-            { x = 416.25, y = 0 },
-            { x = 432.75, y = -0.25 },
-            { x = 432.25, y = -16 },
-            { x = 480.75, y = -16.25 },
-            { x = 480.75, y = -32 },
-            { x = 624.75, y = -32.5 },
-            { x = 624.75, y = -48.25 },
-            { x = 688.5, y = -48.5 },
-            { x = 688.25, y = -64.75 },
-            { x = 736, y = -65.5 },
-            { x = 736, y = -80.25 },
-            { x = 784.25, y = -80.25 },
-            { x = 784.25, y = -64 },
-            { x = 1104.5, y = -64.5 },
-            { x = 1104.75, y = -48.25 },
-            { x = 1361, y = -48 },
-            { x = 1361, y = -31.5 },
-            { x = 1537, y = -32 },
-            { x = 1537.25, y = -16.75 },
-            { x = 1568.5, y = -16.25 },
-            { x = 1569, y = 15.5 },
-            { x = 1584.5, y = 15.25 },
-            { x = 2032.25, y = 15.75 },
-            { x = 2032.5, y = -0.25 },
-            { x = 2129.25, y = -0.75 },
-            { x = 2129, y = -16.25 },
-            { x = 2145.25, y = -16.25 },
-            { x = 2145, y = -32 },
-            { x = 2160.5, y = -32.25 },
-            { x = 2160.75, y = -17 },
-            { x = 2177, y = -17 },
-            { x = 2177, y = -0.75 },
-            { x = 2512.25, y = -0.25 },
-            { x = 2512.25, y = 16 },
-            { x = 2944.25, y = 15 },
-            { x = 2944.25, y = -0.75 },
-            { x = 2992.75, y = -1 },
-            { x = 2992.75, y = -16.75 },
-            { x = 3008.75, y = -16.5 },
-            { x = 3008.75, y = -32.25 },
-            { x = 3024.75, y = -32.5 },
-            { x = 3024.75, y = -16.5 },
-            { x = 3040.5, y = -16.5 },
-            { x = 3040.75, y = -0.75 },
-            { x = 3472.5, y = -0.25 },
-            { x = 3472, y = -16.5 },
-            { x = 3616, y = -16.75 },
-            { x = 3615.75, y = -32.75 },
-            { x = 3936.25, y = -32.5 },
-            { x = 3936.5, y = -47.75 },
-            { x = 4337.25, y = -48 },
-            { x = 4337.75, y = -0.5 },
-            { x = 4385, y = -0.25 },
-            { x = 4385.25, y = 47.5 },
-            { x = 4401, y = 47.25 },
-            { x = 4401.5, y = 63.75 },
-            { x = 4800.25, y = 63.25 }
-          }
+  { x = 0,       y = 0 },
+  { x = 16.25,   y = 0.25 },
+  { x = 16.25,   y = 16 },
+  { x = 416.5,   y = 15.75 },
+  { x = 416.25,  y = 0 },
+  { x = 432.75,  y = -0.25 },
+  { x = 432.25,  y = -16 },
+  { x = 480.75,  y = -16.25 },
+  { x = 480.75,  y = -32 },
+  { x = 624.75,  y = -32.5 },
+  { x = 624.75,  y = -48.25 },
+  { x = 688.5,   y = -48.5 },
+  { x = 688.25,  y = -64.75 },
+  { x = 736,     y = -65.5 },
+  { x = 736,     y = -80.25 },
+  { x = 784.25,  y = -80.25 },
+  { x = 784.25,  y = -64 },
+  { x = 1104.5,  y = -64.5 },
+  { x = 1104.75, y = -48.25 },
+  { x = 1361,    y = -48 },
+  { x = 1361,    y = -31.5 },
+  { x = 1537,    y = -32 },
+  { x = 1537.25, y = -16.75 },
+  { x = 1568.5,  y = -16.25 },
+  { x = 1569,    y = 15.5 },
+  { x = 1584.5,  y = 15.25 },
+  { x = 2032.25, y = 15.75 },
+  { x = 2032.5,  y = -0.25 },
+  { x = 2129.25, y = -0.75 },
+  { x = 2129,    y = -16.25 },
+  { x = 2145.25, y = -16.25 },
+  { x = 2145,    y = -32 },
+  { x = 2160.5,  y = -32.25 },
+  { x = 2160.75, y = -17 },
+  { x = 2177,    y = -17 },
+  { x = 2177,    y = -0.75 },
+  { x = 2512.25, y = -0.25 },
+  { x = 2512.25, y = 16 },
+  { x = 2944.25, y = 15 },
+  { x = 2944.25, y = -0.75 },
+  { x = 2992.75, y = -1 },
+  { x = 2992.75, y = -16.75 },
+  { x = 3008.75, y = -16.5 },
+  { x = 3008.75, y = -32.25 },
+  { x = 3024.75, y = -32.5 },
+  { x = 3024.75, y = -16.5 },
+  { x = 3040.5,  y = -16.5 },
+  { x = 3040.75, y = -0.75 },
+  { x = 3472.5,  y = -0.25 },
+  { x = 3472,    y = -16.5 },
+  { x = 3616,    y = -16.75 },
+  { x = 3615.75, y = -32.75 },
+  { x = 3936.25, y = -32.5 },
+  { x = 3936.5,  y = -47.75 },
+  { x = 4337.25, y = -48 },
+  { x = 4337.75, y = -0.5 },
+  { x = 4385,    y = -0.25 },
+  { x = 4385.25, y = 47.5 },
+  { x = 4401,    y = 47.25 },
+  { x = 4401.5,  y = 63.75 },
+  { x = 4800.25, y = 63.25 }
+}
 polyline = {
   { x = 0,    y = 0 },
   { x = 704,  y = 0 },
@@ -145,6 +147,8 @@ local jogo = {
   pontuacao = 0,
   cutscene = nil,
   movimento = 0,
+  estadoAnterior = nil,
+  chef = true,
 }
 local player = {
   x = 345,
@@ -170,15 +174,16 @@ local player = {
 
 local inimigos = {}
 local tiros = {}
+local raios = {}
 
 -- Função para criar inimigos
-local function criarInimigo(x, y, tipo)
+local function criarInimigo(x, y, tipo, vida)
   local inimigo = {
     x = x,
     y = y,
     speed = 100,
     tipo = tipo,
-    vida = 100,
+    vida = vida or 100,
     lado = "left",
     collider = world:newRectangleCollider(x, y, 60, 70),
     spIS = LG.newImage('Sprit shet/inimigo Sushi.png'),
@@ -197,7 +202,15 @@ local function criarInimigo(x, y, tipo)
   table.insert(inimigos, inimigo)
   inimigo.spIni = inimigo.spIS
 end
-
+local function CarregarChuva()
+  jogo.imagemChuva:setFilter("nearest", "nearest")
+  jogo.chuva = LG.newParticleSystem(jogo.imagemChuva, 1000)  -- Máximo de 1000 partículas
+  jogo.chuva:setParticleLifetime(0.95)                       -- Tempo de vida das partículas (1 a 2 segundos)
+  jogo.chuva:setEmissionRate(100)                            -- Taxa de emissão (partículas por segundo)
+  jogo.chuva:setSizeVariation(0.5)                           -- Variação no tamanho das partículas
+  jogo.chuva:setLinearAcceleration(-10, 300, 10, 500)        -- Velocidade vertical (simula a gravidade)
+  jogo.chuva:setEmissionArea("uniform", jogo.larguraTela, 0) -- Espalha as partículas horizontalmente
+end
 local function criarTiro(x, y, direcao)
   local tiro = {
     x = x,
@@ -209,7 +222,19 @@ local function criarTiro(x, y, direcao)
   }
   table.insert(tiros, tiro)
 end
-local function reiniciarJogo()
+local function criarRaio(x, y, direcao)
+  local raio = {
+    x = x,
+    y = y,
+    speed = 300,
+    direcao = direcao, -- 1 para direita, -1 para esquerda
+    largura = 30,
+    altura = 8,
+    tempo = 2 -- tempo de vida do raio
+  }
+  table.insert(raios, raio)
+end
+local function reiniciarJogo(estado)
   -- Redefine as variáveis do jogador
   player.x = 345
   player.y = 134
@@ -223,37 +248,51 @@ local function reiniciarJogo()
       inimigo.collider:destroy()
     end
   end
-  carregarInimigos()
+  carregarInimigos(8)
   jogo.pontuacao = 0 -- Reseta a pontuação
   -- Remove todos os tiros
   tiros = {}
 
   -- Reseta outras variáveis do jogo, se necessário
   jogo.exibirMensagem1 = true
-  jogo.estado = "jogando"
+  jogo.estado = estado
 end
 function carregarInimigos(num)
+  tempoTiroMicrozila = intervaloTiroMicrozila -- reinicia o timer do microzila
   inimigos = {}
   local inimigosIniciais = num
   local posX = 0
-  -- Posição aleatória no eixo X
-  local posY = 237
+  local posY = 230
   local limite = 900
   math.randomseed(os.time())
   for i = 0, inimigosIniciais do
-    if i >= 2 and i <=3 then
+    if i >= 2 and i <= 3 then
       criarInimigo(posX, posY, "picles")
-    elseif i==5 then
-       criarInimigo(posX, posY, "master")
+    elseif i == 5 then
+      criarInimigo(posX, posY, "master")
+    elseif i == 6 then
+      criarInimigo(8300, 383, "microzila", 300)
     else
       criarInimigo(posX, posY, "normal")
     end
-    -- Gera uma semente aleatória
-    posX = math.random(posX + 100, limite) -- Gera uma posição aleatória no eixo X
-   
+    posX = math.random(posX + 100, limite)
     posX = i * 900
     limite = (i + 1) * 900
   end
+
+  -- Cria o microzila apenas uma vez, no final do mapa, nos estados corretos
+end
+
+local tutorialImg = LG.newImage("Sprit shet/tutorial.png")
+
+function desenharTutorial()
+  local scale = 2 -- ajuste para 0.7 ou outro valor se necessário
+  local imgW, imgH = tutorialImg:getWidth(), tutorialImg:getHeight()
+  local x = jogo.larguraTela - imgW * scale - 10
+  local y = jogo.alturaTela - imgH * scale - 10
+  LG.setColor(1, 1, 1, 0.95)
+  LG.draw(tutorialImg, x, y, 0, scale, scale)
+  LG.setColor(1, 1, 1, 1)
 end
 
 local function desenharMiniMapa()
@@ -300,6 +339,7 @@ local function desenharMiniMapa()
     )
   end
 
+
   -- Reseta a cor para o padrão
   LG.setColor(1, 1, 1)
 end
@@ -320,10 +360,9 @@ local function atualizarTiros(dt)
 
       -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos)
       if tiro.x < inimigo.x and tiro.x + tiro.largura > inimigo.x and
-          tiro.y < inimigo.y + inimigo.spIS:getHeight()/2 and tiro.y + tiro.altura + inimigo.spIS:getHeight() > inimigo.y + inimigo.spIS:getHeight()/2 then
+          tiro.y < inimigo.y + inimigo.spIS:getHeight() / 2 and tiro.y + tiro.altura + inimigo.spIS:getHeight() > inimigo.y + inimigo.spIS:getHeight() / 2 then
         -- Reduz a vida do inimigo
-
-        inimigo.vida = inimigo.vida - 10
+        inimigo.vida = inimigo.vida - 30
 
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
@@ -344,14 +383,20 @@ local function atualizarTiros(dt)
     end
   end
 end
-function CarregarChuva()
-  jogo.imagemChuva:setFilter("nearest", "nearest")
-  jogo.chuva = LG.newParticleSystem(jogo.imagemChuva, 1000)  -- Máximo de 1000 partículas
-  jogo.chuva:setParticleLifetime(0.95)                       -- Tempo de vida das partículas (1 a 2 segundos)
-  jogo.chuva:setEmissionRate(100)                            -- Taxa de emissão (partículas por segundo)
-  jogo.chuva:setSizeVariation(0.5)                           -- Variação no tamanho das partículas
-  jogo.chuva:setLinearAcceleration(-10, 300, 10, 500)        -- Velocidade vertical (simula a gravidade)
-  jogo.chuva:setEmissionArea("uniform", jogo.larguraTela, 0) -- Espalha as partículas horizontalmente
+local function atualizarRaios(dt)
+  for i = #raios, 1, -1 do
+    local raio = raios[i]
+    raio.x = raio.x + (raio.speed * raio.direcao * dt)
+    raio.tempo = raio.tempo - dt
+    -- Colisão com o player
+    if player.x < raio.x + raio.largura and player.x + player.largura > raio.x and
+        player.y < raio.y + raio.altura and player.y + player.altura > raio.y then
+      player.vida = player.vida - 30
+      table.remove(raios, i)
+    elseif raio.x < 0 or raio.x > jogo.mapaLargura or raio.tempo <= 0 then
+      table.remove(raios, i)
+    end
+  end
 end
 
 local function desenharTiros()
@@ -363,27 +408,51 @@ local function desenharTiros()
   LG.setColor(1, 1, 1) -- Reseta a cor para o padrão
 end
 
+local function desenharRaios()
+  for _, raio in ipairs(raios) do
+    LG.setColor(1, 1, 0.2, 0.8)
+    LG.rectangle("fill", raio.x, raio.y, raio.largura, raio.altura)
+    LG.setColor(1, 1, 1)
+  end
+end
+
 local function atualizarInimigos(dt)
+  local cameraLeft = cam.x - jogo.larguraTela / 2
+  local cameraRight = cam.x + jogo.larguraTela / 2
   for _, inimigo in ipairs(inimigos) do
-    -- Obtém a posição do collider
     inimigo.x, inimigo.y = inimigo.collider:getPosition()
     if inimigo.danoTimer > 0 then
       inimigo.danoTimer = inimigo.danoTimer - dt
     end
-
     local velX, velY = inimigo.collider:getLinearVelocity()
-    if inimigo.lado == "left" then
-      inimigo.collider:setLinearVelocity(-inimigo.speed, velY)
-      if inimigo.x < inimigo.limiteEsquerdo then
-        inimigo.lado = "right"
+    -- Só persegue se estiver na área da câmera
+    if inimigo.x > cameraLeft and inimigo.x < cameraRight then
+      local dx = player.x - inimigo.x
+      local distancia = math.abs(dx)
+      if distancia > 5 then
+        local dirX = dx / distancia
+        local velocidade = inimigo.speed
+        inimigo.collider:setLinearVelocity(dirX * velocidade, velY)
+        if dirX < 0 then
+          inimigo.lado = "left"
+        else
+          inimigo.lado = "right"
+        end
+      else
+        inimigo.collider:setLinearVelocity(0, velY)
       end
-    elseif inimigo.lado == "right" then
-      inimigo.collider:setLinearVelocity(inimigo.speed, velY)
-      if inimigo.x > inimigo.limiteDireito then
-        inimigo.lado = "left"
+    else
+      inimigo.collider:setLinearVelocity(0, velY)
+    end
+    -- Microzila atira
+    if inimigo.tipo == "microzila" then
+      tempoTiroMicrozila = tempoTiroMicrozila - dt
+      if tempoTiroMicrozila <= 0 then
+        local dir = (player.x > inimigo.x) and 1 or -1
+        criarRaio(inimigo.x + dir * 40, inimigo.y, dir)
+        tempoTiroMicrozila = intervaloTiroMicrozila
       end
     end
-
     if player.collider:getX() - player.largura < inimigo.x + 60 / 2 and
         player.collider:getX() + player.largura > inimigo.x - 60 / 2 and
         player.collider:getY() - player.altura / 2 < inimigo.y + 60 / 2 and
@@ -391,44 +460,49 @@ local function atualizarInimigos(dt)
       if player.danoTimer <= 0 then
         player.vida = player.vida - 10
         player.danoTimer = 0.5
-        player.collider:applyLinearImpulse(0, -50) -- Aplica
+        player.collider:applyLinearImpulse(0, -50)
       end
     end
-    if math.abs(velX) < 1 then
-      local impulso = inimigo.lado == "left" and -15 or 15
-      inimigo.collider:applyLinearImpulse(0, impulso)
-    end
-   
 
     inimigo.anim:update(dt)
   end
 end
 local function desenharVida()
-  local coracaoLargura = player.coracao:getWidth() * 1.5
+  local coracaoLargura = player.coracao and player.coracao:getWidth() * 1.5 or 24
   LG.setColor(1, 1, 1)
   LG.print("Pontuação: " .. jogo.pontuacao, jogo.larguraTela - 200, 10)
+
   for i = 1, 3 do
-    local coracaoX = 10 + (i - 1) * (coracaoLargura + 5) -- Espaçamento entre os corações
-    LG.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
-    player.coracao:setFilter("nearest", "nearest")
-    player.coracaoVazio:setFilter("nearest", "nearest")
+    local coracaoX = 10 + (i - 1) * (coracaoLargura + 5)
+
+    if player.coracao then
+      LG.draw(player.coracao, 10 + coracaoX, 10, 0, 1.5, 1.5)
+      player.coracao:setFilter("nearest", "nearest")
+    else
+      print("[ERRO] player.coracao não carregado!")
+    end
+    if player.coracaoVazio then
+      player.coracaoVazio:setFilter("nearest", "nearest")
+    else
+      print("[ERRO] player.coracaoVazio não carregado!")
+    end
     if player.vida <= 75 then
-      if i == 3 then
+      if i == 3 and player.coracaoVazio then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 50 then
-      if i == 2 then
+      if i == 2 and player.coracaoVazio then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
     if player.vida <= 25 then
-      if i == 1 then
+      if i == 1 and player.coracaoVazio then
         LG.draw(player.coracaoVazio, 10 + coracaoX, 10, 0, 1.5, 1.5)
       end
     end
   end
-  if jogo.estado == "jogando" or jogo.estado == "cutscene" then
+  if (jogo.estado == "jogando" or jogo.estado == "cutscene") and jogo.chuva then
     LG.draw(jogo.chuva, jogo.larguraTela / 2, 0, 0, 1.5, 1.5)
   end
 end
@@ -436,44 +510,50 @@ end
 -- Função para desenhar os inimigos
 local function desenharInimigos()
   for _, inimigo in ipairs(inimigos) do
-    if inimigo.tipo == "picles" then
-      inimigo.speed = 300
-      inimigo.spIS = LG.newImage('Sprit shet/inimigo picles.png')
+    -- Inicializa sprite e animação apenas uma vez por tipo
+    if not inimigo.spriteSet then
+      if inimigo.tipo == "picles" then
+        inimigo.speed = 110
+        inimigo.spIS = LG.newImage('Sprit shet/inimigo picles.png')
+      elseif inimigo.tipo == "master" then
+        inimigo.speed = 105
+        inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
+      elseif inimigo.tipo == "microzila" then
+        inimigo.speed = 120
+        inimigo.spIS = LG.newImage('Sprit shet/microondas.png')
+        inimigo.vidaMax = inimigo.vida or 300
+      end
+      inimigo.spIS:setFilter("nearest", "nearest")
+      inimigo.grid = anim8.newGrid(64, 64, inimigo.spIS:getWidth(), inimigo.spIS:getHeight())
+      inimigo.anim = anim8.newAnimation(inimigo.grid('1-6', 1), 0.2)
+      inimigo.spriteSet = true
     end
-    if inimigo.tipo == "master" then
-      inimigo.y = inimigo.y - 20
-      inimigo.speed = 200
-      inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
-    end
-    if inimigo.tipo == "microzila" then
-      inimigo.speed = 150
-      inimigo.spIS = LG.newImage('Sprit shet/inimigo sushi master.png')
-      inimigo.vida = 300
-    end
-    inimigo.spIS:setFilter("nearest", "nearest")
     if inimigo.danoTimer > 0 then
       LG.setColor(1, 0, 0, 0.8) -- Vermelho
     else
       LG.setColor(1, 1, 1)      -- Branco (cor normal)
     end
-
-
     local escalaX = inimigo.lado == "left" and -1.8 or 1.8
     inimigo.anim:draw(inimigo.spIS, inimigo.x, inimigo.y, nil, escalaX, 1.8, 32, 32)
-    local barraLargura = 50 -- Largura da barra de vida
-    local barraAltura = 5   -- Altura da barra de vida
-    local vidaPercentual = inimigo.vida / 100
+    -- Barra de vida proporcional à vida máxima
+    local barraLargura = 50
+    local barraAltura = 5
+    local vidaMax = inimigo.vidaMax or 100
+    local vidaPercentual = inimigo.vida / vidaMax
     LG.setColor(0, 0, 0)
     LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura, barraAltura)
-    if inimigo.vida < 40 then
+    if vidaPercentual < 0.4 then
       LG.setColor(1, 0, 0)
-    elseif inimigo.vida >= 40 and inimigo.vida <= 60 then
+    elseif vidaPercentual >= 0.4 and vidaPercentual <= 0.6 then
       LG.setColor(1, 0.5, 0)
     else
       LG.setColor(0, 1, 0)
     end
     LG.rectangle("fill", inimigo.x - barraLargura / 2, inimigo.y - 40, barraLargura * vidaPercentual, barraAltura)
   end
+  -- Debug: printa todos os tipos de inimigos na tela
+
+  LG.setColor(1, 1, 1)
 end
 local Walls = {} -- Declare Walls fora da função para armazenar os colliders
 
@@ -486,7 +566,7 @@ local function carregarLinhas()
 
   -- Cria novos colliders com base na polyline
 
-    for i = 1, #polyline - 1 do
+  for i = 1, #polyline - 1 do
     local p1 = polyline[i]
     local p2 = polyline[i + 1]
     local scaled_x1 = p1.x * jogo.escalaBloco
@@ -497,8 +577,6 @@ local function carregarLinhas()
     wall:setType('static')
     table.insert(Walls, wall)
   end
-  
-
 end
 local function carregarLinhas2()
   -- Limpa os colliders existentes em Walls
@@ -509,24 +587,22 @@ local function carregarLinhas2()
 
   -- Cria novos colliders com base na polyline
 
-    for i = 1, #polyline2 - 1 do
+  for i = 1, #polyline2 - 1 do
     local p1 = polyline2[i]
     local p2 = polyline2[i + 1]
     local scaled_x1 = p1.x * jogo.escalaBloco
     local scaled_y1 = p1.y * jogo.escalaBloco
     local scaled_x2 = p2.x * jogo.escalaBloco
     local scaled_y2 = p2.y * jogo.escalaBloco
-    local wall = world:newLineCollider(scaled_x1, scaled_y1 + jogo.soma-30, scaled_x2, scaled_y2 + jogo.soma-30)
+    local wall = world:newLineCollider(scaled_x1, scaled_y1 + jogo.soma - 30, scaled_x2, scaled_y2 + jogo.soma - 30)
     wall:setType('static')
     table.insert(Walls, wall)
   end
-  
-
 end
 local function desenharPlayer()
   local pontuacao = 40
   if player.danoTimer > 0 then
-    LG.setColor(1, 0, 0)         -- Vermelho
+    LG.setColor(1, 0, 0) -- Vermelho
   elseif jogo.pontuacao == pontuacao then
     player.speed = 200
     LG.setColor(0.1, 0.5, 1, 0.9) -- Azul
@@ -591,18 +667,17 @@ local function atualizarTamanhoTela()
   if jogo.estado == "jogando" or jogo.estado == "cutscene" then
     carregarLinhas()
   end
-  
 end
 
 
 -- Função de carregamento do jogo
 function love.load()
   if jogo.estado == "jogando" or jogo.estado == "cutscene" then
-     CarregarChuva()
+    CarregarChuva()
   end
   jogo.imagemFundo:play()
   jogo.imagemFundo:setFilter("linear", "linear")
- 
+
   world = wf.newWorld(0, 500, true)
   cam = camera()
   sons(jogo.sons, true, true)
@@ -624,33 +699,33 @@ function love.load()
   player.collider:setType('dynamic')
   player.collider:setFixedRotation(true)
   player.collider:setMass(1)
- 
+
   if jogo.estado == "jogando" or jogo.estado == "cutscene" then
     carregarLinhas()
   end
   if jogo.estado == "jogando2" or jogo.estado == "cutscene2" then
     carregarLinhas2()
   end
-  
 end
 
 -- Função de atualização do jogo
 function love.update(dt)
   print("FPS: " .. love.timer.getFPS())
-  print("Posição do jogador: (" .. player.x .. ", " .. player.y .. ")")
-    
+  print("Player X: " .. player.x)
+  print("Player y: " .. player.y)
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
-      tempoCooldownTiro = 0.5      
+      tempoCooldownTiro = 0.5
       player.speed = 200
     end
   end
   if jogo.estado == "cutscene2" then
-    jogo.movimento = jogo.movimento - 70 *dt
+    jogo.movimento = jogo.movimento - 70 * dt
   end
- 
-  if jogo.estado == "jogando" then
+
+  -- Atualiza chuva apenas se estiver inicializada
+  if (jogo.estado == "jogando" or jogo.estado == "cutscene") and jogo.chuva then
     jogo.chuva:update(dt)
   end
   local isMove = false
@@ -670,11 +745,11 @@ function love.update(dt)
   end
 
   if LK.isDown("escape") then
-   if  jogo.exibirBotoes == true  then
-     jogo.exibirBotoes = false
-   elseif jogo.exibirBotoes == false then
+    if jogo.exibirBotoes == true then
+      jogo.exibirBotoes = false
+    elseif jogo.exibirBotoes == false then
       jogo.exibirBotoes = true
-   end
+    end
   end
 
 
@@ -781,14 +856,12 @@ function love.update(dt)
   end
   atualizarInimigos(dt)
   atualizarTiros(dt)
-  
-  if player.x >= 7457 and jogo.estado =="jogando" then
+  atualizarRaios(dt)
+
+  if player.x >= 7457 and jogo.estado == "jogando" then
     jogo.cutscene = nil
     jogo.estado = "cutscene2"
-    
   end
-  
-  
 end
 
 -- Função de desenho do jogo
@@ -801,7 +874,7 @@ function love.draw()
   if LK.isDown("up", "space", "w") then
     if player.jumpCooldown <= 0 then
       sons(jogo.sons, false, "pular")
-      player.collider:applyLinearImpulse(0, -200) -- Aplica o impulso para o pulo
+      player.collider:applyLinearImpulse(0, -300) -- Aplica o impulso para o pulo
       player.jumpCooldown = 1                     -- Define o cooldown para o pulo
     end
   end
@@ -822,20 +895,21 @@ function love.draw()
   end
   if jogo.exibirMensagem1 then
     if jogo.estado == "cutscene" then
-      if not  jogo.cutscene then
-         jogo.cutscene = LG.newVideo('sprits/cutcine.ogv')
-          jogo.cutscene:setFilter("linear", "linear")  
-         jogo.cutscene:play() -- Inicia a reprodução do vídeo
+      if not jogo.cutscene then
+        jogo.cutscene = LG.newVideo('sprits/cutcine.ogv')
+        jogo.cutscene:setFilter("linear", "linear")
+        jogo.cutscene:play() -- Inicia a reprodução do vídeo
         sons(jogo.sons, false, nil)
       end
-      if  jogo.cutscene:isPlaying() then
-        escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
-        LG.draw( jogo.cutscene, 0, 0, 0,escala,escala)
-        player.vida = 100 
+      if jogo.cutscene:isPlaying() then
+        escala = math.max(jogo.larguraTela / jogo.cutscene:getWidth(), jogo.alturaTela / jogo.cutscene:getHeight())
+        LG.draw(jogo.cutscene, 0, 0, 0, escala, escala)
+        player.vida = 100
       end
-      if not  jogo.cutscene:isPlaying() then
+      if not jogo.cutscene:isPlaying() then
         carregarInimigos(10)
         jogo.estado = "jogando"
+        jogo.estadoAnterior = "jogando"
       end
     end
     if jogo.estado == "jogando" or jogo.estado == "pausado" then
@@ -848,15 +922,17 @@ function love.draw()
       gameMap:drawLayer(gameMap.layers["Chao"])
       LG.pop() -- Restaura o estado da matriz de transformação
       desenharPlayer()
-      --world:draw()
       desenharInimigos()
       desenharTiros()
+     
       cam:detach()
       desenharVida()
       desenharMiniMapa()
-      
+      if player.x < 600 then
+        desenharTutorial()
+      end
     end
-     if jogo.estado == "jogando2" or jogo.estado == "pausado" then
+    if jogo.estado == "jogando2" or jogo.estado == "pausado" then
       local gameMap2 = sti('mapa/fase 1/fase2.lua')
       sons(jogo.sons, false, "jogando")
       jogo.escala = math.max(jogo.mapLargura, jogo.mapAltura)
@@ -866,7 +942,7 @@ function love.draw()
       gameMap2:drawLayer(gameMap2.layers["Fundo"])
       gameMap2:drawLayer(gameMap2.layers["Chao"])
       LG.pop() -- Restaura o estado da matriz de transformação
-      
+      desenharRaios()
       desenharPlayer()
       --world:draw()
       desenharInimigos()
@@ -874,59 +950,56 @@ function love.draw()
       cam:detach()
       desenharVida()
       desenharMiniMapa()
-      
     end
+    -- Desenha o tutorial SEMPRE fora do cam:attach/detach, para ficar fixo na tela
+
     if jogo.estado == "cutscene2" then
       sons(jogo.sons, false, "cutscene2")
-      if not  jogo.cutscene then
-         jogo.cutscene = LG.newVideo('sprits/cutcine2.ogv')
-          jogo.cutscene:setFilter("linear", "linear")  
-         jogo.cutscene:play() -- Inicia a reprodução do vídeo
+      if not jogo.cutscene then
+        jogo.cutscene = LG.newVideo('sprits/cutcine2.ogv')
+        jogo.cutscene:setFilter("linear", "linear")
+        jogo.cutscene:play() -- Inicia a reprodução do vídeo
         sons(jogo.sons, false, nil)
       end
-       if jogo.cutscene:isPlaying() == false then
-          jogo.cutscene:seek(0) -- Volta para o início do vídeo
-          jogo.cutscene:play()  -- Inicia a reprodução novamente
-          jogo.movimento = 0
-        end
-      if  jogo.cutscene:isPlaying() then
-       
-        escala = math.max(jogo.larguraTela/ jogo.cutscene:getWidth(), jogo.alturaTela/ jogo.cutscene:getHeight())
-         print(jogo.movimento)
-        LG.draw( jogo.cutscene,jogo.movimento , 0, 0,escala,escala)
-        player.vida = 100
+      if jogo.cutscene:isPlaying() == false then
+        jogo.cutscene:seek(0) -- Volta para o início do vídeo
+        jogo.cutscene:play()  -- Inicia a reprodução novamente
+        jogo.movimento = 0
       end
-      if not  jogo.cutscene:isPlaying() then
-        
+      if jogo.cutscene:isPlaying() then
+        escala = math.max(jogo.larguraTela / jogo.cutscene:getWidth(), jogo.alturaTela / jogo.cutscene:getHeight())
+        print(jogo.movimento)
+        LG.draw(jogo.cutscene, jogo.movimento, 0, 0, escala, escala)
+        player.vida = 200
+      end
+      if not jogo.cutscene:isPlaying() then
         resetarEixoY2()
         carregarInimigos(8)
         carregarLinhas2()
         jogo.estado = "jogando2"
+        jogo.estadoAnterior = "jogando2"
       end
     end
-    
   end
-if player.vida <= 0 then
-    -- Define as cores do botão
-    
-    
-      jogo.estado = "pausado" -- Altera o estado do jogo para "pausado"
-    
-
+  if player.vida <= 0 then
+    jogo.estado = "pausado"
     if suit.Button("Reiniciar", jogo.posicaoBotaoX, jogo.posicaoBotaoY + 50, jogo.larguraBotao, jogo.alturaBotao).hit then
-      reiniciarJogo()
+      if jogo.estadoAnterior == "jogando2" then
+        reiniciarJogo("jogando2")
+      else
+        reiniciarJogo("jogando")
+      end
     end
-
-    -- Exibe o texto "Game Over"
-    LG.setColor(0.5, 0.5, 0.5,0.5) -- Cor cinza médio para o texto
+    LG.setColor(0.5, 0.5, 0.5, 0.5)
     suit.Label("Game Over", jogo.posicaoBotaoX, jogo.posicaoBotaoY, jogo.larguraBotao, jogo.alturaBotao)
   end
-suit.theme.color = {
-      normal = { bg = { 0.2, 0.2, 0.2 }, fg = { 1, 1, 1 } },
-      hovered = { bg = { 0.5, 0.5, 0.5 }, fg = { 0, 0, 1 } },
-      active = { bg = { 0.1, 0.1, 0.1 }, fg = { 0, 1, 0 } }
-    }
+  suit.theme.color = {
+    normal = { bg = { 0.2, 0.2, 0.2 }, fg = { 1, 1, 1 } },
+    hovered = { bg = { 0.5, 0.5, 0.5 }, fg = { 0, 0, 1 } },
+    active = { bg = { 0.1, 0.1, 0.1 }, fg = { 0, 1, 0 } }
+  }
 
   suit.draw()
-  
+
+  -- Desenha tutorial no canto inferior direito se estiver jogando
 end
