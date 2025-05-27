@@ -140,7 +140,7 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 0,
-  estado = "cutscene",
+  estado = "vitoria",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
@@ -985,7 +985,7 @@ function love.draw()
         jogo.cutscene:setFilter("linear", "linear")
         jogo.cutscene:play() -- Inicia a reprodução do vídeo
       end
-      if jogo.cutscene:isPlaying() == false then
+      if jogo.cutscene and jogo.cutscene:isPlaying() == false then
         resetarEixoY()
         jogo.cutscene = nil
         jogo.estado = "cutscene"
@@ -993,13 +993,13 @@ function love.draw()
         jogo.exibirMensagem1 = false
         jogo.exibirMensagem2 = true
       end
-      if jogo.cutscene:isPlaying() then
+      if jogo.cutscene and jogo.cutscene:isPlaying() then
         escala = math.max(jogo.larguraTela / jogo.cutscene:getWidth(), jogo.alturaTela / jogo.cutscene:getHeight())
         LG.draw(jogo.cutscene, jogo.movimento, 0, 0, escala, escala)
         player.vida = 200
       end
-      if not jogo.cutscene:isPlaying() then
-         love.event.quit(0)
+      if not (jogo.cutscene and jogo.cutscene:isPlaying()) then
+        
         resetarEixoY()
         jogo.exibirMensagem1 = false
         jogo.exibirMensagem2 = true
