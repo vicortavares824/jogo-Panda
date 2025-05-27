@@ -999,6 +999,7 @@ function love.draw()
         player.vida = 200
       end
       if not jogo.cutscene:isPlaying() then
+         love.event.quit(0)
         resetarEixoY()
         jogo.exibirMensagem1 = false
         jogo.exibirMensagem2 = true
@@ -1007,6 +1008,7 @@ function love.draw()
         sons(jogo.sons, true, nil)
         jogo.exibirMensagem1 = false
         jogo.exibirMensagem2 = true
+        
       end
     end
     if jogo.estado == "cutscene2" then
