@@ -140,7 +140,7 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 0,
-  estado = "cutscene2",
+  estado = "cutscene",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
@@ -177,7 +177,7 @@ local tiros = {}
 local raios = {}
 
 -- Função para criar inimigos
-local function criarInimigo(x, y, tipo, vida,speed)
+local function criarInimigo(x, y, tipo, vida, speed)
   local inimigo = {
     x = x,
     y = y,
@@ -276,7 +276,7 @@ function carregarInimigos(num)
     elseif i == 5 then
       criarInimigo(posX, posY, "master")
     elseif i == 6 then
-      criarInimigo(8300, 383, "microzila", 200,50)
+      criarInimigo(8300, 383, "microzila", 200, 50)
     else
       criarInimigo(posX, posY, "normal")
     end
@@ -349,7 +349,6 @@ local function desenharMiniMapa()
   LG.setColor(1, 1, 1)
 end
 local function atualizarTiros(dt)
-  
   for i = #tiros, 1, -1 do
     local tiro = tiros[i]
     tiro.x = tiro.x + (tiro.speed * tiro.direcao * dt)
@@ -360,16 +359,17 @@ local function atualizarTiros(dt)
     -- Verifica colisão com inimigos
     for j = #inimigos, 1, -1 do
       local inimigo = inimigos[j]
-      
+
       -- Ajuste do ponto de colisão (offsetY)
       -- Ajusta a posição do tiro para o ponto de colisão correto
-      
-      -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos)
-      if tiro.x <= inimigo.x +32  and tiro.x + tiro.largura >= inimigo.x + 32  and
-          tiro.y <= inimigo.y + 32 and tiro.y + tiro.altura + 64 >= inimigo.y + 32 then
+
+      -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos, igual ao player)
+      if tiro.x < inimigo.x + 60 / 2 and
+          tiro.x + tiro.largura > inimigo.x - 60 / 2 and
+          tiro.y < inimigo.y + 70 / 2 and
+          tiro.y + tiro.altura > inimigo.y - 70 / 2 then
         -- Reduz a vida do inimigo
         inimigo.vida = inimigo.vida - 20
-
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
           inimigo.collider:destroy()
@@ -398,6 +398,7 @@ local function atualizarRaios(dt)
     if player.x < raio.x + raio.largura and player.x + player.largura > raio.x and
         player.y < raio.y + raio.altura and player.y + player.altura > raio.y then
       player.vida = player.vida - 30
+      player.danoTimer = 0.2
       table.remove(raios, i)
     elseif raio.x < 0 or raio.x > jogo.mapaLargura or raio.tempo <= 0 then
       table.remove(raios, i)
@@ -471,6 +472,18 @@ local function atualizarInimigos(dt)
     end
 
     inimigo.anim:update(dt)
+  end
+  -- Após atualizar todos os inimigos, verifica se ainda existe microzila viva
+  local microzilaVivo = false
+  for _, inimigo in ipairs(inimigos) do
+    if inimigo.tipo == "microzila" then
+      microzilaVivo = true
+      break
+    end
+  end
+  if not microzilaVivo and jogo.estado == "jogando2" then
+    jogo.estado = "vitoria"
+    jogo.exibirMensagem1 = true
   end
 end
 local function desenharVida()
@@ -804,7 +817,7 @@ function love.update(dt)
     elseif cooldownTiro <= 0 and LK.isDown('f') then
       desenharTiros()
       criarTiro(player.x, player.y - 20, direcaoAtual) -- Cria o tiro na direção atual
-      
+
       if direcaoAtual == 1 then
         player.anim = player.animation.atira
         player.lado = player.spAtira -- Atirando para a direita
@@ -847,6 +860,7 @@ function love.update(dt)
       sons(jogo.sons, false, "para")
     end
   end
+  
   world:update(dt)
   player.x = player.collider:getX()
   player.y = player.collider:getY()
@@ -914,6 +928,11 @@ function love.draw()
       end
       if not jogo.cutscene:isPlaying() then
         carregarInimigos(10)
+        player.x = 345
+        player.y = 130
+        if player.collider then
+          player.collider:setPosition(400, 250)
+        end
         jogo.estado = "jogando"
         jogo.estadoAnterior = "jogando"
       end
@@ -930,7 +949,7 @@ function love.draw()
       desenharPlayer()
       desenharInimigos()
       desenharTiros()
-     
+
       cam:detach()
       desenharVida()
       desenharMiniMapa()
@@ -959,6 +978,37 @@ function love.draw()
     end
     -- Desenha o tutorial SEMPRE fora do cam:attach/detach, para ficar fixo na tela
 
+    if jogo.estado == "vitoria" then
+      sons(jogo.sons, true, nil)
+      if not jogo.cutscene then
+        jogo.cutscene = LG.newVideo('sprits/cutcine3.ogv')
+        jogo.cutscene:setFilter("linear", "linear")
+        jogo.cutscene:play() -- Inicia a reprodução do vídeo
+      end
+      if jogo.cutscene:isPlaying() == false then
+        resetarEixoY()
+        jogo.cutscene = nil
+        jogo.estado = "cutscene"
+        sons(jogo.sons, true, nil)
+        jogo.exibirMensagem1 = false
+        jogo.exibirMensagem2 = true
+      end
+      if jogo.cutscene:isPlaying() then
+        escala = math.max(jogo.larguraTela / jogo.cutscene:getWidth(), jogo.alturaTela / jogo.cutscene:getHeight())
+        LG.draw(jogo.cutscene, jogo.movimento, 0, 0, escala, escala)
+        player.vida = 200
+      end
+      if not jogo.cutscene:isPlaying() then
+        resetarEixoY()
+        jogo.exibirMensagem1 = false
+        jogo.exibirMensagem2 = true
+        jogo.cutscene = nil
+        jogo.estado = "cutscene"
+        sons(jogo.sons, true, nil)
+        jogo.exibirMensagem1 = false
+        jogo.exibirMensagem2 = true
+      end
+    end
     if jogo.estado == "cutscene2" then
       sons(jogo.sons, false, "cutscene2")
       if not jogo.cutscene then
@@ -974,7 +1024,7 @@ function love.draw()
       end
       if jogo.cutscene:isPlaying() then
         escala = math.max(jogo.larguraTela / jogo.cutscene:getWidth(), jogo.alturaTela / jogo.cutscene:getHeight())
-        print(jogo.movimento)
+       
         LG.draw(jogo.cutscene, jogo.movimento, 0, 0, escala, escala)
         player.vida = 200
       end
@@ -984,6 +1034,7 @@ function love.draw()
         carregarLinhas2()
         jogo.estado = "jogando2"
         jogo.estadoAnterior = "jogando2"
+        jogo.cutscene = nil
       end
     end
   end

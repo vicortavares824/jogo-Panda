@@ -1,5 +1,5 @@
 local buttons = {}
-function buttons.draw(show_buttons, x, y, largura_botao, largura_botao_base, altura_botao_base, tela_cheia, tamanhoTela, show_message1, show_message2)
+function buttons.draw(show_buttons, x, y, largura_botao, largura_botao_base, altura_botao_base, tela_cheia, tamanhoTela, show_message1, show_message2,estado)
   if show_buttons then -- Desenha os botões apenas se show_buttons for verdadeiro
     suit.theme.color = {
       normal = {bg = {0.2, 0.2, 0.2}, fg = {1, 1, 1}}, -- Fundo cinza escuro, texto branco
@@ -14,6 +14,7 @@ function buttons.draw(show_buttons, x, y, largura_botao, largura_botao_base, alt
             show_message1 = true
             show_message2 = false
             show_buttons = false 
+            estado = "cutscene" -- Muda o estado do jogo para "game"
         end
         if opacao2.hit then
             show_message2 = not show_message2
@@ -39,6 +40,6 @@ function buttons.draw(show_buttons, x, y, largura_botao, largura_botao_base, alt
         end
     end
 
-    return show_message1,show_message2,show_buttons
+    return show_message1,show_message2,show_buttons,estado
 end
 return buttons
