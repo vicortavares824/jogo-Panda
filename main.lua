@@ -140,7 +140,7 @@ local jogo = {
   mapAltura = 1,
   escala = 1,
   escalaBloco = 0,
-  estado = "cutscene",
+  estado = "cutscene2",
   chuva = nil,
   imagemChuva = LG.newImage("Sprit shet/gota.png"),
   soma = 330,
@@ -177,11 +177,11 @@ local tiros = {}
 local raios = {}
 
 -- Função para criar inimigos
-local function criarInimigo(x, y, tipo, vida)
+local function criarInimigo(x, y, tipo, vida,speed)
   local inimigo = {
     x = x,
     y = y,
-    speed = 100,
+    speed = speed or 100,
     tipo = tipo,
     vida = vida or 100,
     lado = "left",
@@ -220,17 +220,22 @@ local function criarTiro(x, y, direcao)
     largura = 10,
     altura = 3
   }
+  if direcao == 1 then
+    tiro.x = tiro.x + player.largura -- Ajusta a posição do tiro para a direita
+  else
+    tiro.x = tiro.x - player.largura -- Ajusta a posição do tiro para a esquerda
+  end
   table.insert(tiros, tiro)
 end
 local function criarRaio(x, y, direcao)
   local raio = {
     x = x,
     y = y,
-    speed = 300,
+    speed = 100,
     direcao = direcao, -- 1 para direita, -1 para esquerda
     largura = 30,
-    altura = 8,
-    tempo = 2 -- tempo de vida do raio
+    altura = 4,
+    tempo = 1 -- tempo de vida do raio
   }
   table.insert(raios, raio)
 end
@@ -261,7 +266,7 @@ function carregarInimigos(num)
   tempoTiroMicrozila = intervaloTiroMicrozila -- reinicia o timer do microzila
   inimigos = {}
   local inimigosIniciais = num
-  local posX = 0
+  local posX = 900
   local posY = 230
   local limite = 900
   math.randomseed(os.time())
@@ -271,7 +276,7 @@ function carregarInimigos(num)
     elseif i == 5 then
       criarInimigo(posX, posY, "master")
     elseif i == 6 then
-      criarInimigo(8300, 383, "microzila", 300)
+      criarInimigo(8300, 383, "microzila", 200,50)
     else
       criarInimigo(posX, posY, "normal")
     end
@@ -344,6 +349,7 @@ local function desenharMiniMapa()
   LG.setColor(1, 1, 1)
 end
 local function atualizarTiros(dt)
+  
   for i = #tiros, 1, -1 do
     local tiro = tiros[i]
     tiro.x = tiro.x + (tiro.speed * tiro.direcao * dt)
@@ -354,15 +360,15 @@ local function atualizarTiros(dt)
     -- Verifica colisão com inimigos
     for j = #inimigos, 1, -1 do
       local inimigo = inimigos[j]
-
+      
       -- Ajuste do ponto de colisão (offsetY)
-
-
+      -- Ajusta a posição do tiro para o ponto de colisão correto
+      
       -- Verifica se o tiro colide com o inimigo (detecção de colisão de retângulos)
-      if tiro.x < inimigo.x and tiro.x + tiro.largura > inimigo.x and
-          tiro.y < inimigo.y + inimigo.spIS:getHeight() / 2 and tiro.y + tiro.altura + inimigo.spIS:getHeight() > inimigo.y + inimigo.spIS:getHeight() / 2 then
+      if tiro.x <= inimigo.x +32  and tiro.x + tiro.largura >= inimigo.x + 32  and
+          tiro.y <= inimigo.y + 32 and tiro.y + tiro.altura + 64 >= inimigo.y + 32 then
         -- Reduz a vida do inimigo
-        inimigo.vida = inimigo.vida - 30
+        inimigo.vida = inimigo.vida - 20
 
         inimigo.danoTimer = 0.2
         if inimigo.vida <= 0 then
@@ -711,8 +717,6 @@ end
 -- Função de atualização do jogo
 function love.update(dt)
   print("FPS: " .. love.timer.getFPS())
-  print("Player X: " .. player.x)
-  print("Player y: " .. player.y)
   if tempoBonusCooldown > 0 then
     tempoBonusCooldown = tempoBonusCooldown - dt -- Reduz o tempo restante
     if tempoBonusCooldown <= 0 then
@@ -798,7 +802,9 @@ function love.update(dt)
       end
       isMove = true
     elseif cooldownTiro <= 0 and LK.isDown('f') then
+      desenharTiros()
       criarTiro(player.x, player.y - 20, direcaoAtual) -- Cria o tiro na direção atual
+      
       if direcaoAtual == 1 then
         player.anim = player.animation.atira
         player.lado = player.spAtira -- Atirando para a direita
